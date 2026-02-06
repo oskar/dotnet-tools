@@ -1,7 +1,7 @@
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Spectre.Console;
@@ -48,15 +48,19 @@ public sealed class OpenSolutionCommand(IAnsiConsole ansiConsole) : Command<Open
             return 1;
         }
 
-        var files = Directory.EnumerateFiles(searchPath, "*.sln", new EnumerationOptions
+        var enumerationOptions = new EnumerationOptions
         {
             IgnoreInaccessible = true,
             RecurseSubdirectories = true
-        }).OrderBy(f => f).ToArray();
+        };
+        var slnFiles = Directory.EnumerateFiles(searchPath, "*.sln", enumerationOptions);
+        var slnxFiles = Directory.EnumerateFiles(searchPath, "*.slnx", enumerationOptions);
+        string[] files = [.. slnFiles, .. slnxFiles];
+        Array.Sort(files);
 
         if (files.Length == 0)
         {
-            ansiConsole.WriteLine("No solution found in path.");
+            ansiConsole.WriteLine("No solution (.sln or .slnx) found in path.");
             return 0;
         }
 
