@@ -41,14 +41,16 @@ public class OpenSolutionCommandTests : IDisposable
 
         // Assert
         Assert.Equal(0, result);
-        Assert.Equal("No solution found in path.", console.Output.Trim());
+        Assert.Equal("No solution (.sln or .slnx) found in path.", console.Output.Trim());
     }
 
-    [Fact]
-    public void Execute_opens_single_solution()
+    [Theory]
+    [InlineData("Solution.sln")]
+    [InlineData("Solution.slnx")]
+    public void Execute_opens_single_solution(string fileName)
     {
         // Arrange
-        File.WriteAllText(Path.Combine(_tempDirectory, "TestSolution.sln"), "");
+        File.WriteAllText(Path.Combine(_tempDirectory, fileName), "");
         var console = CreateTestConsole();
         var command = new OpenSolutionCommand(console);
         var settings = new OpenSolutionCommand.Settings
@@ -61,7 +63,29 @@ public class OpenSolutionCommandTests : IDisposable
 
         // Assert
         Assert.Equal(0, result);
-        Assert.Equal($"Opening {Path.Combine(_tempDirectory, "TestSolution.sln")}.", console.Output.Trim());
+        Assert.Equal($"Opening {Path.Combine(_tempDirectory, fileName)}.", console.Output.Trim());
+    }
+
+    [Fact]
+    public void Execute_finds_both_sln_and_slnx_files()
+    {
+        // Arrange
+        File.WriteAllText(Path.Combine(_tempDirectory, "Solution1.sln"), "");
+        File.WriteAllText(Path.Combine(_tempDirectory, "Solution2.slnx"), "");
+        var console = CreateTestConsole();
+        var command = new OpenSolutionCommand(console);
+        var settings = new OpenSolutionCommand.Settings
+        {
+            Path = _tempDirectory,
+            First = true
+        };
+
+        // Act
+        var result = command.Execute(null!, settings, CancellationToken.None);
+
+        // Assert
+        Assert.Equal(0, result);
+        Assert.StartsWith("Found 2 solutions in", console.Lines[0]);
     }
 
     [Fact]
@@ -126,7 +150,7 @@ public class OpenSolutionCommandTests : IDisposable
 
         // Assert
         Assert.Equal(0, result);
-        Assert.Equal("No solution found in path.", console.Output.Trim());
+        Assert.Equal("No solution (.sln or .slnx) found in path.", console.Output.Trim());
     }
 
     private static TestConsole CreateTestConsole()
