@@ -112,7 +112,7 @@ public class OpenSolutionCommandTests : IDisposable
         Assert.Equal($"Opening {Path.Combine(_tempDirectory, "Solution1.sln")}.", console.Lines[1]);
     }
 
-    [Fact(Skip = "Not properly implemented yet.")]
+    [Fact]
     public void Execute_shows_selection_prompt_when_multiple_solutions_found_and_first_flag_not_set()
     {
         // Arrange
@@ -120,6 +120,9 @@ public class OpenSolutionCommandTests : IDisposable
         File.WriteAllText(Path.Combine(_tempDirectory, "Solution2.sln"), "");
         File.WriteAllText(Path.Combine(_tempDirectory, "Solution3.sln"), "");
         var console = CreateTestConsole();
+        console.Profile.Capabilities.Interactive = true;
+        console.Input.PushKey(ConsoleKey.DownArrow); // Move to second option
+        console.Input.PushKey(ConsoleKey.Enter);     // Select it
         var command = new OpenSolutionCommand(console);
         var settings = new OpenSolutionCommand.Settings
         {
@@ -132,6 +135,9 @@ public class OpenSolutionCommandTests : IDisposable
 
         // Assert
         Assert.Equal(0, result);
+        Assert.Equal($"Found 3 solutions in {_tempDirectory}.", console.Lines[0]);
+        Assert.Contains("Select which to open:", console.Output);
+        Assert.Contains($"Opening {Path.Combine(_tempDirectory, "Solution2.sln")}.", console.Output);
     }
 
     [Fact]
