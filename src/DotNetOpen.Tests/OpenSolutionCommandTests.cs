@@ -26,7 +26,7 @@ public class OpenSolutionCommandTests : IDisposable
     }
 
     [Fact]
-    public void Execute_returns_1_when_no_solution_found()
+    public void Execute_returns_0_when_no_solution_found()
     {
         // Arrange
         var console = CreateTestConsole();
@@ -61,7 +61,7 @@ public class OpenSolutionCommandTests : IDisposable
 
         // Assert
         Assert.Equal(0, result);
-        Assert.Equal($"Opening {Path.Combine(_tempDirectory, "TestSolution.sln.")}", console.Output.Trim());
+        Assert.Equal($"Opening {Path.Combine(_tempDirectory, "TestSolution.sln")}.", console.Output.Trim());
     }
 
     [Fact(Skip = "Investigate why Solution2.sln is opened.")]
@@ -85,7 +85,7 @@ public class OpenSolutionCommandTests : IDisposable
         // Assert
         Assert.Equal(0, result);
         Assert.StartsWith("Found 3 solutions in", console.Lines[0]);
-        Assert.Equal($"Opening {Path.Combine(_tempDirectory, "Solution1.sln.")}", console.Lines[1]);
+        Assert.Equal($"Opening {Path.Combine(_tempDirectory, "Solution1.sln")}.", console.Lines[1]);
     }
 
     [Fact(Skip = "Not properly implemented yet.")]
@@ -125,7 +125,6 @@ public class OpenSolutionCommandTests : IDisposable
         var result = command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
-        // Since current directory likely has no solutions, we expect return code 1
         Assert.Equal(0, result);
         Assert.Equal("No solution found in path.", console.Output.Trim());
     }
