@@ -52,7 +52,7 @@ public sealed class OpenSolutionCommand(IAnsiConsole ansiConsole) : Command<Open
         {
             IgnoreInaccessible = true,
             RecurseSubdirectories = true
-        }).ToArray();
+        }).OrderBy(f => f).ToArray();
 
         if (files.Length == 0)
         {

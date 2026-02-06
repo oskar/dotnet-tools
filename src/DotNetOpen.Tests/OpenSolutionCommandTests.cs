@@ -64,7 +64,7 @@ public class OpenSolutionCommandTests : IDisposable
         Assert.Equal($"Opening {Path.Combine(_tempDirectory, "TestSolution.sln")}.", console.Output.Trim());
     }
 
-    [Fact(Skip = "Investigate why Solution2.sln is opened.")]
+    [Fact]
     public void Execute_opens_first_of_multiple_solutions_when_first_flag_set()
     {
         // Arrange
