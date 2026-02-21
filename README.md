@@ -6,11 +6,12 @@ A collection of .NET tools for common development tasks.
 
 [![NuGet version](https://img.shields.io/nuget/v/dotnet-overview)](https://www.nuget.org/packages/dotnet-overview) [![NuGet downloads](https://img.shields.io/nuget/dt/dotnet-overview)](https://www.nuget.org/packages/dotnet-overview)
 
-Display an overview of all `.csproj` files in the current directory or any specified path, showing project names, target frameworks, and SDK format information. Supports JSON output for advanced filtering.
+Display an overview of all `.csproj` files in the current directory or any specified path, showing project names, target frameworks, and SDK format information. When solution files (`.sln`/`.slnx`) are found, projects are grouped by solution. Supports JSON output for advanced filtering.
 
 ```bash
 ❯ dotnet tool install -g dotnet-overview
 ❯ dotnet overview
+                    DotNetTools.sln
 ┌──────────────────────┬──────────────────┬────────────┐
 │ Project              │ Target framework │ SDK format │
 ├──────────────────────┼──────────────────┼────────────┤

@@ -1,6 +1,6 @@
 # dotnet-overview
 
-A .NET tool that displays an overview of all projects in a directory, showing information such as project names, target frameworks, and SDK format. It recursively scans `.csproj` files and displays a formatted table with key project information. It can also output JSON for advanced filtering and scripting.
+A .NET tool that displays an overview of all projects in a directory, showing information such as project names, target frameworks, and SDK format. It recursively scans `.csproj` files and displays formatted tables with key project information. When solution files (`.sln` or `.slnx`) are found, projects are grouped by solution with each displayed in a separate table. Projects not belonging to any solution are shown as dangling. It can also output JSON for advanced filtering and scripting.
 
 ## Install
 
@@ -62,6 +62,16 @@ Show projects with names matching a pattern:
 Group by target framework all projects not using the new SDK csproj format and sort by count descending:
 ```powershell
 (dotnet overview -j | ConvertFrom-Json) | where SdkFormat -eq $false | select TargetFramework | group -Property TargetFramework -NoElement | sort -Property Count -Descending
+```
+
+Filter projects by solution:
+```powershell
+(dotnet overview -j | ConvertFrom-Json) | where SolutionFileName -eq 'MySolution.sln'
+```
+
+Show projects not belonging to any solution:
+```powershell
+(dotnet overview -j | ConvertFrom-Json) | where { $_.SolutionFileName -eq $null }
 ```
 
 ## Upgrade

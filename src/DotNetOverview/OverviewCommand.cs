@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -81,10 +83,13 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
             return 0;
         }
 
-        var projects = allCsprojFiles
-            .OrderBy(f => f)
-            .Select(ProjectParser.Parse)
-            .ToList();
+        // Discover solution files
+        var slnFiles = Directory.EnumerateFiles(searchPath, "*.sln", EnumerationOptions);
+        var slnxFiles = Directory.EnumerateFiles(searchPath, "*.slnx", EnumerationOptions);
+        string[] solutionFiles = [.. slnFiles, .. slnxFiles];
+        Array.Sort(solutionFiles);
+
+        var projects = CollectProjects(allCsprojFiles, solutionFiles);
 
         if (!settings.AbsolutePaths)
         {
@@ -99,6 +104,25 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
         {
             var json = JsonSerializer.Serialize(projects, JsonOptions);
             ansiConsole.WriteLine(json);
+            return 0;
+        }
+
+        if (solutionFiles.Length > 0)
+        {
+            foreach (var group in projects.GroupBy(p => p.SolutionFileName))
+            {
+                if (group.Key is null)
+                    continue;
+
+                ansiConsole.Write(Utilities.FormatProjects(group.ToList(), settings.ShowPaths, group.Key));
+            }
+
+            var dangling = projects.Where(p => p.SolutionFileName is null).ToList();
+            if (dangling.Count > 0)
+            {
+                ansiConsole.Write(Utilities.FormatProjects(dangling, settings.ShowPaths,
+                    "Dangling (not part of any solution)"));
+            }
         }
         else
         {
@@ -111,5 +135,44 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
         }
 
         return 0;
+    }
+
+    private static List<Project> CollectProjects(string[] allCsprojFiles, string[] solutionFiles)
+    {
+        if (solutionFiles.Length == 0)
+        {
+            return allCsprojFiles
+                .OrderBy(f => f)
+                .Select(ProjectParser.Parse)
+                .ToList();
+        }
+
+        var solutions = solutionFiles.Select(SolutionParser.Parse).ToList();
+
+        var claimedProjectPaths = new HashSet<string>(
+            solutions.SelectMany(s => s.ProjectPaths),
+            StringComparer.OrdinalIgnoreCase);
+
+        var projects = new List<Project>();
+
+        foreach (var solution in solutions)
+        {
+            foreach (var projectPath in solution.ProjectPaths.Where(File.Exists))
+            {
+                var project = ProjectParser.Parse(projectPath);
+                project.SolutionFileName = solution.Name;
+                projects.Add(project);
+            }
+        }
+
+        // Add dangling projects (not part of any solution)
+        var danglingProjects = allCsprojFiles
+            .Where(f => !claimedProjectPaths.Contains(Path.GetFullPath(f)))
+            .OrderBy(f => f)
+            .Select(ProjectParser.Parse);
+
+        projects.AddRange(danglingProjects);
+
+        return projects;
     }
 }
