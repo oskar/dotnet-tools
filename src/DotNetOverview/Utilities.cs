@@ -6,13 +6,18 @@ namespace DotNetOverview;
 
 public static class Utilities
 {
-    public static IRenderable FormatProjects(ICollection<Project> projects, bool showPath = false)
+    public static IRenderable FormatProjects(ICollection<Project> projects, bool showPath = false, string? title = null)
     {
         var table = new Table()
           .AddColumn("Project")
           .AddColumn("Target framework")
           .AddColumn("SDK format")
           .BorderColor(Color.DarkGreen);
+
+        if (title is not null)
+        {
+            table.Title = new TableTitle(title);
+        }
 
         foreach (var project in projects)
         {

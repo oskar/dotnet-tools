@@ -10,4 +10,5 @@ public class Project
     public string? OutputType { get; set; }
     public string? Authors { get; set; }
     public string? Version { get; set; }
+    public string? SolutionFileName { get; set; }
 }
