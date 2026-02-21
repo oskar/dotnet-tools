@@ -11,7 +11,16 @@ namespace DotNetOverview;
 
 public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<OverviewCommand.Settings>
 {
-    private static readonly JsonSerializerOptions JsonOptions = new() { WriteIndented = true };
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        WriteIndented = true
+    };
+
+    private static readonly EnumerationOptions EnumerationOptions = new()
+    {
+        IgnoreInaccessible = true,
+        RecurseSubdirectories = true
+    };
 
     public sealed class Settings : CommandSettings
     {
@@ -62,20 +71,18 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
             return 1;
         }
 
-        var files = Directory.EnumerateFiles(searchPath, "*.csproj", new EnumerationOptions
-        {
-            IgnoreInaccessible = true,
-            RecurseSubdirectories = true
-        }).ToArray();
+        // Discover all csproj files
+        var allCsprojFiles = Directory.EnumerateFiles(searchPath, "*.csproj", EnumerationOptions)
+            .ToArray();
 
-        if (files.Length == 0)
+        if (allCsprojFiles.Length == 0)
         {
             ansiConsole.WriteLine("No csproj files found in path.");
             return 0;
         }
 
         var parser = new ProjectParser();
-        var projects = files
+        var projects = allCsprojFiles
             .OrderBy(f => f)
             .Select(parser.Parse)
             .ToList();
@@ -101,7 +108,7 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
 
         if (settings.Count)
         {
-            ansiConsole.MarkupLine($"Found [green]{files.Length}[/] project(s).");
+            ansiConsole.MarkupLine($"Found [green]{allCsprojFiles.Length}[/] project(s).");
         }
 
         return 0;
