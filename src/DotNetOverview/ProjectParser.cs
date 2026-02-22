@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace DotNetOverview;
@@ -23,7 +24,16 @@ public static class ProjectParser
             Name = Path.GetFileNameWithoutExtension(projectFilePath)
         };
 
-        var xmlDoc = XDocument.Load(projectFilePath);
+        XDocument xmlDoc;
+        try
+        {
+            xmlDoc = XDocument.Load(projectFilePath);
+        }
+        catch (XmlException e)
+        {
+            throw new InvalidOperationException($"Failed to load project file: '{projectFilePath}'", e);
+        }
+
         var sdkFormat = IsSdkFormat(xmlDoc);
         project.SdkFormat = sdkFormat;
 

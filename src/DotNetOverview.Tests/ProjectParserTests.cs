@@ -36,6 +36,15 @@ public class ProjectParserTests : IDisposable
       Assert.Throws<ArgumentException>(() => ProjectParser.Parse("thisfiledoesnotexist.csproj"));
 
     [Fact]
+    public void Parse_throws_on_invalid_xml()
+    {
+        var projectPath = CreateTempProjectFile("Corrupt.csproj", "not xml at all");
+
+        var ex = Assert.Throws<InvalidOperationException>(() => ProjectParser.Parse(projectPath));
+        Assert.Contains("Corrupt.csproj", ex.Message);
+    }
+
+    [Fact]
     public void Parse_supports_SDK_style_projects()
     {
         // Arrange
