@@ -81,10 +81,9 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
             return 0;
         }
 
-        var parser = new ProjectParser();
         var projects = allCsprojFiles
             .OrderBy(f => f)
-            .Select(parser.Parse)
+            .Select(ProjectParser.Parse)
             .ToList();
 
         if (!settings.AbsolutePaths)
