@@ -25,15 +25,15 @@ public class ProjectParserTests : IDisposable
 
     [Fact]
     public void Parse_throws_on_null() =>
-      Assert.Throws<ArgumentNullException>(() => new ProjectParser().Parse(null!));
+      Assert.Throws<ArgumentNullException>(() => ProjectParser.Parse(null!));
 
     [Fact]
     public void Parse_throws_on_empty_argument() =>
-      Assert.Throws<ArgumentNullException>(() => new ProjectParser().Parse(""));
+      Assert.Throws<ArgumentNullException>(() => ProjectParser.Parse(""));
 
     [Fact]
     public void Parse_throws_on_missing_file() =>
-      Assert.Throws<ArgumentException>(() => new ProjectParser().Parse("thisfiledoesnotexist.csproj"));
+      Assert.Throws<ArgumentException>(() => ProjectParser.Parse("thisfiledoesnotexist.csproj"));
 
     [Fact]
     public void Parse_supports_SDK_style_projects()
@@ -52,7 +52,7 @@ public class ProjectParserTests : IDisposable
         var projectPath = CreateTempProjectFile("TestProject.csproj", projectContent);
 
         // Act
-        var result = new ProjectParser().Parse(projectPath);
+        var result = ProjectParser.Parse(projectPath);
 
         // Assert
         Assert.Equal("TestProject", result.Name);
@@ -82,7 +82,7 @@ public class ProjectParserTests : IDisposable
         var projectPath = CreateTempProjectFile("LegacyProject.csproj", projectContent);
 
         // Act
-        var result = new ProjectParser().Parse(projectPath);
+        var result = ProjectParser.Parse(projectPath);
 
         // Assert
         Assert.Equal("LegacyProject", result.Name);
@@ -109,7 +109,7 @@ public class ProjectParserTests : IDisposable
         var projectPath = CreateTempProjectFile("MultiTargetProject.csproj", projectContent);
 
         // Act
-        var result = new ProjectParser().Parse(projectPath);
+        var result = ProjectParser.Parse(projectPath);
 
         // Assert
         Assert.Equal("MultiTargetProject", result.Name);
@@ -134,7 +134,7 @@ public class ProjectParserTests : IDisposable
         var projectPath = CreateTempProjectFile("VersionProject.csproj", projectContent);
 
         // Act
-        var result = new ProjectParser().Parse(projectPath);
+        var result = ProjectParser.Parse(projectPath);
 
         // Assert
         Assert.Equal("VersionProject", result.Name);
@@ -158,7 +158,7 @@ public class ProjectParserTests : IDisposable
         var projectPath = CreateTempProjectFile("PrefixOnlyProject.csproj", projectContent);
 
         // Act
-        var result = new ProjectParser().Parse(projectPath);
+        var result = ProjectParser.Parse(projectPath);
 
         // Assert
         Assert.Equal("PrefixOnlyProject", result.Name);
@@ -181,7 +181,7 @@ public class ProjectParserTests : IDisposable
         var projectPath = CreateTempProjectFile("MinimalProject.csproj", projectContent);
 
         // Act
-        var result = new ProjectParser().Parse(projectPath);
+        var result = ProjectParser.Parse(projectPath);
 
         // Assert
         Assert.Equal("MinimalProject", result.Name);
@@ -212,7 +212,7 @@ public class ProjectParserTests : IDisposable
         var projectPath = CreateTempProjectFile("MultiGroupProject.csproj", projectContent);
 
         // Act
-        var result = new ProjectParser().Parse(projectPath);
+        var result = ProjectParser.Parse(projectPath);
 
         // Assert
         Assert.Equal("MultiGroupProject", result.Name);
@@ -241,7 +241,7 @@ public class ProjectParserTests : IDisposable
         var projectPath = CreateTempProjectFile("EmptyPropsProject.csproj", projectContent);
 
         // Act
-        var result = new ProjectParser().Parse(projectPath);
+        var result = ProjectParser.Parse(projectPath);
 
         // Assert
         Assert.Equal("EmptyPropsProject", result.Name);

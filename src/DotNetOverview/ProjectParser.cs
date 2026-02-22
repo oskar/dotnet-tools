@@ -5,11 +5,11 @@ using System.Xml.Linq;
 
 namespace DotNetOverview;
 
-public class ProjectParser
+public static class ProjectParser
 {
-    private readonly XNamespace _msbuildNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
+    private static readonly XNamespace _msbuildNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
 
-    public Project Parse(string projectFilePath)
+    public static Project Parse(string projectFilePath)
     {
         if (string.IsNullOrEmpty(projectFilePath))
             throw new ArgumentNullException(nameof(projectFilePath));
@@ -56,7 +56,7 @@ public class ProjectParser
     private static bool IsSdkFormat(XDocument document) =>
       !string.IsNullOrEmpty(document.Element("Project")?.Attribute("Sdk")?.Value);
 
-    private string? GetPropertyValue(XDocument document, string property)
+    private static string? GetPropertyValue(XDocument document, string property)
     {
         var value = document.Element(_msbuildNamespace + "Project")
           ?.Elements(_msbuildNamespace + "PropertyGroup")
