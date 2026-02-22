@@ -17,7 +17,7 @@ public static class Utilities
         foreach (var project in projects)
         {
             table.AddRow(
-              showPath ? project.Path ?? "" : project.Name ?? "",
+              showPath ? project.Path : project.Name,
               project.TargetFramework ?? "",
               project.SdkFormat.HasValue ? project.SdkFormat.Value ? "Yes" : "No" : "-"
             );
