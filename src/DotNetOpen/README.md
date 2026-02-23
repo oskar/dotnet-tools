@@ -1,9 +1,9 @@
 # dotnet-open
 
 A .NET tool that finds and opens solution files in the current directory
-or any specified path. It searches for `.sln` files and opens them with
-your default application. When multiple solutions are found, it presents
-an interactive menu to choose which one to open.
+or any specified path. It searches for `.sln` and `.slnx` files and opens
+them with your default application. When multiple solutions are found, it
+presents an interactive menu to choose which one to open.
 
 ## Install
 
