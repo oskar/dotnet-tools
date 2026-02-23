@@ -7,22 +7,23 @@ A collection of .NET tools for common development tasks.
 [![NuGet version](https://img.shields.io/nuget/v/dotnet-overview)](https://www.nuget.org/packages/dotnet-overview) [![NuGet downloads](https://img.shields.io/nuget/dt/dotnet-overview)](https://www.nuget.org/packages/dotnet-overview)
 
 Display an overview of all `.csproj` files in the current directory or
-any specified path, showing project names, target frameworks, and SDK
-information. When solution files (`.sln`/`.slnx`) are found, projects
-are grouped by solution. Supports JSON output for advanced filtering.
+any specified path, showing project names, target frameworks, output
+types, and SDK information. When solution files (`.sln`/`.slnx`) are
+found, projects are grouped by solution. Supports JSON output for
+advanced filtering.
 
 ```bash
 ❯ dotnet tool install -g dotnet-overview
 ❯ dotnet overview
                     DotNetTools.sln
-┌──────────────────────┬──────────────────┬─────────────────────┐
-│ Project              │ Target framework │ SDK                 │
-├──────────────────────┼──────────────────┼─────────────────────┤
-│ DotNetOpen.Tests     │ net8.0           │ Microsoft.NET.Sdk   │
-│ DotNetOpen           │ net8.0           │ Microsoft.NET.Sdk   │
-│ DotNetOverview.Tests │ net8.0           │ Microsoft.NET.Sdk   │
-│ DotNetOverview       │ net8.0           │ Microsoft.NET.Sdk   │
-└──────────────────────┴──────────────────┴─────────────────────┘
+┌──────────────────────┬──────────────────┬─────────────┬─────────────────────┐
+│ Project              │ Target framework │ Output type │ SDK                 │
+├──────────────────────┼──────────────────┼─────────────┼─────────────────────┤
+│ DotNetOpen.Tests     │ net8.0           │             │ Microsoft.NET.Sdk   │
+│ DotNetOpen           │ net8.0           │ Exe         │ Microsoft.NET.Sdk   │
+│ DotNetOverview.Tests │ net8.0           │             │ Microsoft.NET.Sdk   │
+│ DotNetOverview       │ net8.0           │ Exe         │ Microsoft.NET.Sdk   │
+└──────────────────────┴──────────────────┴─────────────┴─────────────────────┘
 Found 4 project(s).
 ```
 

@@ -11,6 +11,7 @@ public static class Utilities
         var table = new Table()
           .AddColumn("Project")
           .AddColumn("Target framework")
+          .AddColumn("Output type")
           .AddColumn("SDK")
           .BorderColor(Color.DarkGreen);
 
@@ -24,6 +25,7 @@ public static class Utilities
             table.AddRow(
               showPath ? project.Path : project.Name,
               project.TargetFramework ?? "",
+              project.OutputType ?? "",
               project.Sdk ?? ""
             );
         }
