@@ -66,11 +66,33 @@ public class ProjectParserTests : IDisposable
         // Assert
         Assert.Equal("TestProject", result.Name);
         Assert.Equal(projectPath, result.Path);
-        Assert.True(result.SdkFormat);
+        Assert.Equal("Microsoft.NET.Sdk", result.Sdk);
         Assert.Equal("net8.0", result.TargetFramework);
         Assert.Equal("Exe", result.OutputType);
         Assert.Equal("John Doe", result.Authors);
         Assert.Equal("1.2.3", result.Version);
+    }
+
+    [Fact]
+    public void Parse_supports_web_SDK()
+    {
+        // Arrange
+        var projectContent = """
+      <Project Sdk="Microsoft.NET.Sdk.Web">
+        <PropertyGroup>
+          <TargetFramework>net8.0</TargetFramework>
+        </PropertyGroup>
+      </Project>
+      """;
+        var projectPath = CreateTempProjectFile("WebProject.csproj", projectContent);
+
+        // Act
+        var result = ProjectParser.Parse(projectPath);
+
+        // Assert
+        Assert.Equal("WebProject", result.Name);
+        Assert.Equal("Microsoft.NET.Sdk.Web", result.Sdk);
+        Assert.Equal("net8.0", result.TargetFramework);
     }
 
     [Fact]
@@ -96,7 +118,7 @@ public class ProjectParserTests : IDisposable
         // Assert
         Assert.Equal("LegacyProject", result.Name);
         Assert.Equal(projectPath, result.Path);
-        Assert.False(result.SdkFormat);
+        Assert.Null(result.Sdk);
         Assert.Equal("v4.7.2", result.TargetFramework);
         Assert.Equal("WinExe", result.OutputType);
         Assert.Equal("Jane Smith", result.Authors);
@@ -122,7 +144,7 @@ public class ProjectParserTests : IDisposable
 
         // Assert
         Assert.Equal("MultiTargetProject", result.Name);
-        Assert.True(result.SdkFormat);
+        Assert.Equal("Microsoft.NET.Sdk", result.Sdk);
         Assert.Equal("net6.0;net8.0", result.TargetFramework);
     }
 
@@ -147,7 +169,7 @@ public class ProjectParserTests : IDisposable
 
         // Assert
         Assert.Equal("VersionProject", result.Name);
-        Assert.True(result.SdkFormat);
+        Assert.Equal("Microsoft.NET.Sdk", result.Sdk);
         Assert.Equal("2.1.0-alpha", result.Version);
     }
 
@@ -171,7 +193,7 @@ public class ProjectParserTests : IDisposable
 
         // Assert
         Assert.Equal("PrefixOnlyProject", result.Name);
-        Assert.True(result.SdkFormat);
+        Assert.Equal("Microsoft.NET.Sdk", result.Sdk);
         Assert.Equal("3.0.0", result.Version);
     }
 
@@ -194,7 +216,7 @@ public class ProjectParserTests : IDisposable
 
         // Assert
         Assert.Equal("MinimalProject", result.Name);
-        Assert.True(result.SdkFormat);
+        Assert.Equal("Microsoft.NET.Sdk", result.Sdk);
         Assert.Equal("net8.0", result.TargetFramework);
         Assert.Null(result.OutputType);
         Assert.Null(result.Authors);
@@ -225,7 +247,7 @@ public class ProjectParserTests : IDisposable
 
         // Assert
         Assert.Equal("MultiGroupProject", result.Name);
-        Assert.True(result.SdkFormat);
+        Assert.Equal("Microsoft.NET.Sdk", result.Sdk);
         Assert.Equal("net8.0", result.TargetFramework);
         Assert.Equal("Exe", result.OutputType);
         Assert.Equal("Multi Group Author", result.Authors);
@@ -254,7 +276,7 @@ public class ProjectParserTests : IDisposable
 
         // Assert
         Assert.Equal("EmptyPropsProject", result.Name);
-        Assert.True(result.SdkFormat);
+        Assert.Equal("Microsoft.NET.Sdk", result.Sdk);
         Assert.Equal("net8.0", result.TargetFramework);
         Assert.Equal("", result.OutputType);
         Assert.Equal("", result.Authors);

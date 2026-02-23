@@ -34,10 +34,10 @@ public static class ProjectParser
             throw new InvalidOperationException($"Failed to load project file: '{projectFilePath}'", e);
         }
 
-        var sdkFormat = IsSdkFormat(xmlDoc);
-        project.SdkFormat = sdkFormat;
+        var sdk = GetSdk(xmlDoc);
+        project.Sdk = sdk;
 
-        if (sdkFormat)
+        if (sdk is not null)
         {
             project.TargetFramework =
               GetPropertyValue(xmlDoc, "TargetFramework") ??
@@ -63,8 +63,11 @@ public static class ProjectParser
         return project;
     }
 
-    private static bool IsSdkFormat(XDocument document) =>
-      !string.IsNullOrEmpty(document.Element("Project")?.Attribute("Sdk")?.Value);
+    private static string? GetSdk(XDocument document)
+    {
+        var value = document.Element("Project")?.Attribute("Sdk")?.Value;
+        return string.IsNullOrEmpty(value) ? null : value;
+    }
 
     private static string? GetPropertyValue(XDocument document, string property)
     {
