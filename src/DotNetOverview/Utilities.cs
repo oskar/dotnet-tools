@@ -11,7 +11,7 @@ public static class Utilities
         var table = new Table()
           .AddColumn("Project")
           .AddColumn("Target framework")
-          .AddColumn("SDK format")
+          .AddColumn("SDK")
           .BorderColor(Color.DarkGreen);
 
         if (title is not null)
@@ -24,7 +24,7 @@ public static class Utilities
             table.AddRow(
               showPath ? project.Path : project.Name,
               project.TargetFramework ?? "",
-              project.SdkFormat.HasValue ? project.SdkFormat.Value ? "Yes" : "No" : "-"
+              project.Sdk ?? ""
             );
         }
 
