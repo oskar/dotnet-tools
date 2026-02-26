@@ -4,8 +4,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using Spectre.Console.Rendering;
 
 namespace DotNetOpen;
 
@@ -86,7 +88,17 @@ public sealed class OpenSolutionCommand(IAnsiConsole ansiConsole) : Command<Open
             Converter = filePath => Path.GetRelativePath(searchPath, filePath)
         };
         selectionPrompt.AddChoices(files);
-        var selectedSolution = ansiConsole.Prompt(selectionPrompt);
+
+        string selectedSolution;
+        try
+        {
+            selectedSolution = new EscCancellingConsole(ansiConsole).Prompt(selectionPrompt);
+        }
+        catch (EscapePressedException)
+        {
+            return 1;
+        }
+
         OpenFile(selectedSolution);
 
         return 0;
@@ -100,5 +112,39 @@ public sealed class OpenSolutionCommand(IAnsiConsole ansiConsole) : Command<Open
             FileName = filePath,
             UseShellExecute = true
         });
+    }
+
+    private sealed class EscapePressedException : Exception;
+
+    // Remove when Spectre.Console natively supports ESC cancellation in SelectionPrompt
+    // (tracked in https://github.com/spectreconsole/spectre.console/issues/851)
+    private sealed class EscCancellingConsole(IAnsiConsole inner) : IAnsiConsole
+    {
+        private readonly EscCancellingInput _input = new(inner.Input);
+
+        public Profile Profile => inner.Profile;
+        public IAnsiConsoleCursor Cursor => inner.Cursor;
+        public IAnsiConsoleInput Input => _input;
+        public IExclusivityMode ExclusivityMode => inner.ExclusivityMode;
+        public RenderPipeline Pipeline => inner.Pipeline;
+        public void Clear(bool home) => inner.Clear(home);
+        public void Write(IRenderable renderable) => inner.Write(renderable);
+
+        private sealed class EscCancellingInput(IAnsiConsoleInput inner) : IAnsiConsoleInput
+        {
+            public bool IsKeyAvailable() => inner.IsKeyAvailable();
+
+            public ConsoleKeyInfo? ReadKey(bool intercept)
+            {
+                var key = inner.ReadKey(intercept);
+                return key?.Key == ConsoleKey.Escape ? throw new EscapePressedException() : key;
+            }
+
+            public async Task<ConsoleKeyInfo?> ReadKeyAsync(bool intercept, CancellationToken cancellationToken)
+            {
+                var key = await inner.ReadKeyAsync(intercept, cancellationToken);
+                return key?.Key == ConsoleKey.Escape ? throw new EscapePressedException() : key;
+            }
+        }
     }
 }
