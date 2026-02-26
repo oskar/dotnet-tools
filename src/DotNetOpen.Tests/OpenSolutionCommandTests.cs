@@ -141,6 +141,30 @@ public class OpenSolutionCommandTests : IDisposable
     }
 
     [Fact]
+    public void Execute_returns_1_and_opens_nothing_when_ESC_pressed_at_selection_prompt()
+    {
+        // Arrange
+        File.WriteAllText(Path.Combine(_tempDirectory, "Solution1.sln"), "");
+        File.WriteAllText(Path.Combine(_tempDirectory, "Solution2.sln"), "");
+        var console = CreateTestConsole();
+        console.Profile.Capabilities.Interactive = true;
+        console.Input.PushKey(ConsoleKey.Escape);
+        var command = new OpenSolutionCommand(console);
+        var settings = new OpenSolutionCommand.Settings
+        {
+            Path = _tempDirectory,
+            First = false
+        };
+
+        // Act
+        var result = command.Execute(null!, settings, CancellationToken.None);
+
+        // Assert
+        Assert.Equal(1, result);
+        Assert.DoesNotContain("Opening", console.Output);
+    }
+
+    [Fact]
     public void Execute_uses_current_directory_when_search_path_is_empty()
     {
         // Arrange
