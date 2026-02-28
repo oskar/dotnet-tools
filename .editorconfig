@@ -152,3 +152,6 @@ csharp_style_namespace_declarations = file_scoped:warning
 
 # Disable IDE0008: Use explicit type instead of var
 dotnet_diagnostic.IDE0008.severity = none
+
+# Disable IDE0305: Collection initialization can be simplified
+dotnet_diagnostic.IDE0305.severity = none
