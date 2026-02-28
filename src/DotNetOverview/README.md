@@ -36,11 +36,6 @@ Show absolute paths:
 dotnet overview --absolute-paths
 ```
 
-Show count of projects found:
-```bash
-dotnet overview --count
-```
-
 Output as JSON for scripting:
 ```bash
 dotnet overview --json

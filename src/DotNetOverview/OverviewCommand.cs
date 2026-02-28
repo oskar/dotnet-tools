@@ -42,10 +42,6 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
         [CommandOption("-a|--absolute-paths")]
         public bool AbsolutePaths { get; set; }
 
-        [Description("Show number of projects found")]
-        [CommandOption("-c|--count")]
-        public bool Count { get; set; }
-
         [Description("Format the result as JSON")]
         [CommandOption("-j|--json")]
         public bool Json { get; set; }
@@ -129,10 +125,7 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
             ansiConsole.Write(Utilities.FormatProjects(projects, settings.ShowPaths));
         }
 
-        if (settings.Count)
-        {
-            ansiConsole.MarkupLine($"Found [green]{allCsprojFiles.Length}[/] project(s).");
-        }
+        ansiConsole.MarkupLine($"Found [green]{allCsprojFiles.Length}[/] project(s).");
 
         return 0;
     }
