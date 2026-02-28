@@ -23,6 +23,7 @@ are grouped by solution. Supports JSON output for advanced filtering.
 │ DotNetOverview.Tests │ net8.0           │ Microsoft.NET.Sdk   │
 │ DotNetOverview       │ net8.0           │ Microsoft.NET.Sdk   │
 └──────────────────────┴──────────────────┴─────────────────────┘
+Found 4 project(s).
 ```
 
 ## [dotnet-open](src/DotNetOpen/README.md)
