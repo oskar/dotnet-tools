@@ -151,3 +151,6 @@ csharp_space_between_square_brackets = false
 
 # Enforce file-scoped namespace
 csharp_style_namespace_declarations = file_scoped:warning
+
+# Disable IDE0008: Use explicit type instead of var
+dotnet_diagnostic.IDE0008.severity = none
