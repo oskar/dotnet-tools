@@ -18,12 +18,6 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
         WriteIndented = true
     };
 
-    private static readonly EnumerationOptions EnumerationOptions = new()
-    {
-        IgnoreInaccessible = true,
-        RecurseSubdirectories = true
-    };
-
     public sealed class Settings : CommandSettings
     {
         [Description("Path to search. Defaults to current directory.")]
@@ -69,21 +63,15 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
             return 1;
         }
 
-        // Discover all csproj files
-        var allCsprojFiles = Directory.EnumerateFiles(searchPath, "*.csproj", EnumerationOptions)
-            .ToArray();
+        var scanResult = FileScanner.Scan(searchPath);
+        var allCsprojFiles = scanResult.CsprojFiles;
+        var solutionFiles = scanResult.SolutionFiles;
 
         if (allCsprojFiles.Length == 0)
         {
             ansiConsole.WriteLine("No csproj files found in path.");
             return 0;
         }
-
-        // Discover solution files
-        var slnFiles = Directory.EnumerateFiles(searchPath, "*.sln", EnumerationOptions);
-        var slnxFiles = Directory.EnumerateFiles(searchPath, "*.slnx", EnumerationOptions);
-        string[] solutionFiles = [.. slnFiles, .. slnxFiles];
-        Array.Sort(solutionFiles);
 
         var projects = CollectProjects(allCsprojFiles, solutionFiles);
 
