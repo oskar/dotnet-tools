@@ -122,7 +122,7 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
         }
         else
         {
-            ansiConsole.Write(Utilities.FormatProjects(projects, settings.ShowPaths));
+            ansiConsole.Write(Utilities.FormatProjects(projects, settings.ShowPaths, null));
         }
 
         ansiConsole.MarkupLine($"Found [green]{allCsprojFiles.Length}[/] project(s).");

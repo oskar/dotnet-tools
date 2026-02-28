@@ -6,7 +6,7 @@ namespace DotNetOverview;
 
 public static class Utilities
 {
-    public static IRenderable FormatProjects(ICollection<Project> projects, bool showPath = false, string? title = null)
+    public static IRenderable FormatProjects(ICollection<Project> projects, bool showPath, string? title)
     {
         var table = new Table()
           .AddColumn("Project")
