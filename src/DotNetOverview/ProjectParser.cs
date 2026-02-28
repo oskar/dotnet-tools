@@ -8,7 +8,7 @@ namespace DotNetOverview;
 
 public static class ProjectParser
 {
-    private static readonly XNamespace _msbuildNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
+    private static readonly XNamespace MsBuildNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
 
     public static Project Parse(string projectFilePath)
     {
@@ -71,9 +71,9 @@ public static class ProjectParser
 
     private static string? GetPropertyValue(XDocument document, string property)
     {
-        var value = document.Element(_msbuildNamespace + "Project")
-          ?.Elements(_msbuildNamespace + "PropertyGroup")
-          .Elements(_msbuildNamespace + property)
+        var value = document.Element(MsBuildNamespace + "Project")
+          ?.Elements(MsBuildNamespace + "PropertyGroup")
+          .Elements(MsBuildNamespace + property)
           .Select(v => v.Value)
           .FirstOrDefault();
 
