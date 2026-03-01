@@ -63,9 +63,9 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
             return 1;
         }
 
-        var scanResult = FileScanner.Scan(searchPath);
-        var allCsprojFiles = scanResult.CsprojFiles;
-        var solutionFiles = scanResult.SolutionFiles;
+        (string[] allCsprojFiles, string[] solutionFiles) = ansiConsole.WithSpinner(
+            "Scanning csproj and solution files...",
+            () => FileScanner.Scan(searchPath));
 
         if (allCsprojFiles.Length == 0)
         {
@@ -73,7 +73,9 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
             return 0;
         }
 
-        var projects = CollectProjects(allCsprojFiles, solutionFiles);
+        var projects = ansiConsole.WithSpinner(
+            "Parsing projects...",
+            () => CollectProjects(allCsprojFiles, solutionFiles));
 
         if (!settings.AbsolutePaths)
         {
