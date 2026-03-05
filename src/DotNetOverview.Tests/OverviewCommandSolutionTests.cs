@@ -177,6 +177,47 @@ public class OverviewCommandSolutionTests : IDisposable
     }
 
     [Fact]
+    public void Solution_path_is_relative_when_show_paths_flag_set()
+    {
+        // Arrange
+        CreateCsprojFile("ProjectA");
+        CreateSlnxFile("TestSolution", ["ProjectA"]);
+        var console = CreateTestConsole();
+        var command = new OverviewCommand(console);
+        var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true, ShowPaths = true };
+
+        // Act
+        command.Execute(null!, settings, CancellationToken.None);
+
+        // Assert
+        var projects = JsonSerializer.Deserialize<Project[]>(console.Output);
+        Assert.NotNull(projects);
+        var project = Assert.Single(projects);
+        Assert.False(Path.IsPathRooted(project.Solution), $"Expected relative path but got: {project.Solution}");
+    }
+
+    [Fact]
+    public void Solution_path_is_absolute_when_show_paths_and_absolute_paths_flags_set()
+    {
+        // Arrange
+        CreateCsprojFile("ProjectA");
+        CreateSlnxFile("TestSolution", ["ProjectA"]);
+        var console = CreateTestConsole();
+        var command = new OverviewCommand(console);
+        var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true, ShowPaths = true, AbsolutePaths = true };
+
+        // Act
+        command.Execute(null!, settings, CancellationToken.None);
+
+        // Assert
+        var projects = JsonSerializer.Deserialize<Project[]>(console.Output);
+        Assert.NotNull(projects);
+        var project = Assert.Single(projects);
+        Assert.True(Path.IsPathRooted(project.Solution), $"Expected absolute path but got: {project.Solution}");
+        Assert.StartsWith(_tempDirectory, project.Solution);
+    }
+
+    [Fact]
     public void Groups_projects_by_sln_file()
     {
         // Arrange

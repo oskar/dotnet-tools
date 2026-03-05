@@ -77,12 +77,21 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
             "Parsing projects...",
             () => CollectProjects(allCsprojFiles, solutionFiles));
 
-        if (!settings.AbsolutePaths)
+        foreach (Project project in projects)
         {
-            // Make paths relative to search path.
-            foreach (Project project in projects)
+            if (!settings.AbsolutePaths)
             {
+                // Adjust path to be relative to search path
                 project.Path = Path.GetRelativePath(searchPath, project.Path);
+            }
+
+            if (project.Solution is not null)
+            {
+                if (!settings.ShowPaths)
+                    project.Solution = Path.GetFileName(project.Solution);
+                else if (!settings.AbsolutePaths)
+                    project.Solution = Path.GetRelativePath(searchPath, project.Solution);
+                // else: ShowPaths + AbsolutePaths → keep the stored absolute path as-is
             }
         }
 
@@ -143,7 +152,7 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
             foreach (var projectPath in solution.ProjectPaths.Where(File.Exists))
             {
                 var project = ProjectParser.Parse(projectPath);
-                project.Solution = solution.Name;
+                project.Solution = solution.Path;
                 projects.Add(project);
             }
         }
