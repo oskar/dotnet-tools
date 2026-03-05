@@ -134,7 +134,6 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
         if (solutionFiles.Count == 0)
         {
             return allCsprojFiles
-                .OrderBy(f => f)
                 .Select(ProjectParser.Parse)
                 .ToList();
         }
@@ -160,7 +159,6 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
         // Add dangling projects (not part of any solution)
         var danglingProjects = allCsprojFiles
             .Where(f => !claimedProjectPaths.Contains(Path.GetFullPath(f)))
-            .OrderBy(f => f)
             .Select(ProjectParser.Parse);
 
         projects.AddRange(danglingProjects);
