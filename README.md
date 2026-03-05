@@ -14,15 +14,15 @@ are grouped by solution. Supports JSON output for advanced filtering.
 ```bash
 ❯ dotnet tool install -g dotnet-overview
 ❯ dotnet overview
-                    DotNetTools.sln
-┌──────────────────────┬──────────────────┬─────────────────────┐
-│ Project              │ Target framework │ SDK                 │
-├──────────────────────┼──────────────────┼─────────────────────┤
-│ DotNetOpen.Tests     │ net8.0           │ Microsoft.NET.Sdk   │
-│ DotNetOpen           │ net8.0           │ Microsoft.NET.Sdk   │
-│ DotNetOverview.Tests │ net8.0           │ Microsoft.NET.Sdk   │
-│ DotNetOverview       │ net8.0           │ Microsoft.NET.Sdk   │
-└──────────────────────┴──────────────────┴─────────────────────┘
+                        DotNetTools.sln
+┌──────────────────────┬──────────────────┬───────────────────┐
+│ Project              │ Target framework │ SDK               │
+├──────────────────────┼──────────────────┼───────────────────┤
+│ DotNetOpen.Tests     │ net8.0           │ Microsoft.NET.Sdk │
+│ DotNetOpen           │ net8.0           │ Microsoft.NET.Sdk │
+│ DotNetOverview.Tests │ net8.0           │ Microsoft.NET.Sdk │
+│ DotNetOverview       │ net8.0           │ Microsoft.NET.Sdk │
+└──────────────────────┴──────────────────┴───────────────────┘
 Found 4 project(s).
 ```
 
