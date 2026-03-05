@@ -130,7 +130,7 @@ public class FileScannerTests : IDisposable
     }
 
     [Fact]
-    public void Scan_solution_files_are_sorted_alphabetically()
+    public void Scan_sorts_solution_files_alphabetically()
     {
         CreateFile("Z.sln");
         CreateFile("A.sln");
@@ -140,6 +140,19 @@ public class FileScannerTests : IDisposable
 
         var names = result.SolutionFiles.Select(f => Path.GetFileName(f)!).ToArray();
         Assert.Equal(["A.sln", "M.slnx", "Z.sln"], names);
+    }
+
+    [Fact]
+    public void Scan_sorts_csproj_files_alphabetically()
+    {
+        CreateFile("Z.csproj");
+        CreateFile("A.csproj");
+        CreateFile("M.csproj");
+
+        var result = FileScanner.Scan(_tempDirectory);
+
+        var names = result.CsprojFiles.Select(f => Path.GetFileName(f)!).ToArray();
+        Assert.Equal(["A.csproj", "M.csproj", "Z.csproj"], names);
     }
 
     [Fact]

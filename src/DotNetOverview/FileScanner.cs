@@ -54,6 +54,7 @@ public static class FileScanner
             }
         }
 
+        csprojFiles.Sort();
         solutionFiles.Sort();
 
         return new ScanResult(csprojFiles, solutionFiles);
