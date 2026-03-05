@@ -1,12 +1,13 @@
 # dotnet-overview
 
 A .NET tool that displays an overview of all projects in a directory,
-showing information such as project names, target frameworks, and SDK
-type. It recursively scans `.csproj` files and displays formatted tables
-with key project information. When solution files (`.sln` or `.slnx`)
-are found, projects are grouped by solution with each displayed in a
-separate table. Projects not belonging to any solution are shown as
-dangling. It can also output JSON for advanced filtering and scripting.
+showing information such as project names, target frameworks, output
+types, and SDK type. It recursively scans `.csproj` files and displays
+formatted tables with key project information. When solution files
+(`.sln` or `.slnx`) are found, projects are grouped by solution with each
+displayed in a separate table. Projects not belonging to any solution are
+shown as dangling. It can also output JSON for advanced filtering and
+scripting.
 
 ## Install
 
