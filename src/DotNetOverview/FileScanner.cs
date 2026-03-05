@@ -5,7 +5,7 @@ using System.IO.Enumeration;
 
 namespace DotNetOverview;
 
-public record ScanResult(string[] CsprojFiles, string[] SolutionFiles);
+public record ScanResult(IReadOnlyList<string> CsprojFiles, IReadOnlyList<string> SolutionFiles);
 
 public static class FileScanner
 {
@@ -17,8 +17,8 @@ public static class FileScanner
 
     public static ScanResult Scan(string searchPath)
     {
-        var csprojList = new List<string>();
-        var solutionList = new List<string>();
+        var csprojFiles = new List<string>();
+        var solutionFiles = new List<string>();
 
         var enumerable = new FileSystemEnumerable<string>(
             searchPath,
@@ -46,17 +46,16 @@ public static class FileScanner
         {
             if (file.EndsWith(".csproj", StringComparison.OrdinalIgnoreCase))
             {
-                csprojList.Add(file);
+                csprojFiles.Add(file);
             }
             else
             {
-                solutionList.Add(file);
+                solutionFiles.Add(file);
             }
         }
 
-        var solutionFiles = solutionList.ToArray();
-        Array.Sort(solutionFiles);
+        solutionFiles.Sort();
 
-        return new ScanResult([.. csprojList], solutionFiles);
+        return new ScanResult(csprojFiles, solutionFiles);
     }
 }

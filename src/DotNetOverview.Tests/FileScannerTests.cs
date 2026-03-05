@@ -42,7 +42,7 @@ public class FileScannerTests : IDisposable
 
         var result = FileScanner.Scan(_tempDirectory);
 
-        Assert.Equal(2, result.CsprojFiles.Length);
+        Assert.Equal(2, result.CsprojFiles.Count);
         Assert.Contains(result.CsprojFiles, f => Path.GetFileName(f) == "MyApp.csproj");
         Assert.Contains(result.CsprojFiles, f => Path.GetFileName(f) == "MyLib.csproj");
     }
@@ -77,7 +77,7 @@ public class FileScannerTests : IDisposable
 
         var result = FileScanner.Scan(_tempDirectory);
 
-        Assert.Equal(2, result.SolutionFiles.Length);
+        Assert.Equal(2, result.SolutionFiles.Count);
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public class FileScannerTests : IDisposable
 
         var result = FileScanner.Scan(_tempDirectory);
 
-        Assert.Equal(2, result.CsprojFiles.Length);
+        Assert.Equal(2, result.CsprojFiles.Count);
         Assert.Single(result.SolutionFiles);
     }
 
