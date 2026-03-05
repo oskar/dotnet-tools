@@ -69,7 +69,7 @@ public class OverviewCommandSolutionTests : IDisposable
     }
 
     [Fact]
-    public void Json_output_includes_SolutionFileName()
+    public void Json_output_includes_Solution()
     {
         // Arrange
         CreateCsprojFile("InSolution");
@@ -89,10 +89,10 @@ public class OverviewCommandSolutionTests : IDisposable
         Assert.Equal(2, projects.Length);
 
         var inSolution = Assert.Single(projects, p => p.Name == "InSolution");
-        Assert.Equal("TestSolution.slnx", inSolution.SolutionFileName);
+        Assert.Equal("TestSolution.slnx", inSolution.Solution);
 
         var dangling = Assert.Single(projects, p => p.Name == "Dangling");
-        Assert.Null(dangling.SolutionFileName);
+        Assert.Null(dangling.Solution);
     }
 
     [Fact]
@@ -195,7 +195,7 @@ public class OverviewCommandSolutionTests : IDisposable
         var projects = JsonSerializer.Deserialize<Project[]>(console.Output);
         Assert.NotNull(projects);
         Assert.Equal(2, projects.Length);
-        Assert.All(projects, p => Assert.Equal("TestSolution.sln", p.SolutionFileName));
+        Assert.All(projects, p => Assert.Equal("TestSolution.sln", p.Solution));
     }
 
     [Fact]
@@ -218,8 +218,8 @@ public class OverviewCommandSolutionTests : IDisposable
         Assert.NotNull(projects);
         Assert.Equal(2, projects.Length);
         Assert.All(projects, p => Assert.Equal("SharedProject", p.Name));
-        Assert.Contains(projects, p => p.SolutionFileName == "SolutionA.slnx");
-        Assert.Contains(projects, p => p.SolutionFileName == "SolutionB.slnx");
+        Assert.Contains(projects, p => p.Solution == "SolutionA.slnx");
+        Assert.Contains(projects, p => p.Solution == "SolutionB.slnx");
     }
 
     private void CreateCsprojFile(string projectName)
