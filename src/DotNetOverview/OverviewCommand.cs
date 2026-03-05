@@ -95,7 +95,7 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
 
         if (solutionFiles.Length > 0)
         {
-            foreach (var group in projects.GroupBy(p => p.SolutionFileName))
+            foreach (var group in projects.GroupBy(p => p.Solution))
             {
                 if (group.Key is null)
                     continue;
@@ -103,7 +103,7 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
                 ansiConsole.Write(Utilities.FormatProjects(group.ToList(), settings.ShowPaths, group.Key));
             }
 
-            var dangling = projects.Where(p => p.SolutionFileName is null).ToList();
+            var dangling = projects.Where(p => p.Solution is null).ToList();
             if (dangling.Count > 0)
             {
                 ansiConsole.Write(Utilities.FormatProjects(dangling, settings.ShowPaths,
@@ -143,7 +143,7 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
             foreach (var projectPath in solution.ProjectPaths.Where(File.Exists))
             {
                 var project = ProjectParser.Parse(projectPath);
-                project.SolutionFileName = solution.Name;
+                project.Solution = solution.Name;
                 projects.Add(project);
             }
         }
