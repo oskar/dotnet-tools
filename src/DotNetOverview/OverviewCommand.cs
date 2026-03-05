@@ -63,11 +63,11 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
             return 1;
         }
 
-        (string[] allCsprojFiles, string[] solutionFiles) = ansiConsole.WithSpinner(
+        (IReadOnlyList<string> allCsprojFiles, IReadOnlyList<string> solutionFiles) = ansiConsole.WithSpinner(
             "Scanning csproj and solution files...",
             () => FileScanner.Scan(searchPath));
 
-        if (allCsprojFiles.Length == 0)
+        if (allCsprojFiles.Count == 0)
         {
             ansiConsole.WriteLine("No csproj files found in path.");
             return 0;
@@ -102,7 +102,7 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
             return 0;
         }
 
-        if (solutionFiles.Length > 0)
+        if (solutionFiles.Count > 0)
         {
             foreach (var group in projects.GroupBy(p => p.Solution))
             {
@@ -124,14 +124,14 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
             ansiConsole.Write(Utilities.FormatProjects(projects, settings.ShowPaths, null));
         }
 
-        ansiConsole.MarkupLine($"Found [green]{allCsprojFiles.Length}[/] project(s).");
+        ansiConsole.MarkupLine($"Found [green]{allCsprojFiles.Count}[/] project(s).");
 
         return 0;
     }
 
-    private static List<Project> CollectProjects(string[] allCsprojFiles, string[] solutionFiles)
+    private static List<Project> CollectProjects(IReadOnlyList<string> allCsprojFiles, IReadOnlyList<string> solutionFiles)
     {
-        if (solutionFiles.Length == 0)
+        if (solutionFiles.Count == 0)
         {
             return allCsprojFiles
                 .OrderBy(f => f)
