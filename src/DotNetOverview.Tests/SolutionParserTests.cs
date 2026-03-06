@@ -119,6 +119,30 @@ public class SolutionParserTests : IDisposable
     }
 
     [Fact]
+    public void Parse_throws_on_corrupt_slnx_file()
+    {
+        // Arrange
+        var slnxPath = CreateTempFile("Corrupt.slnx", "this is not valid xml <<<<<");
+
+        // Act & Assert
+        var ex = Assert.Throws<InvalidOperationException>(() => SolutionParser.Parse(slnxPath));
+        Assert.Contains("could not be parsed", ex.Message);
+        Assert.Contains("Corrupt.slnx", ex.Message);
+    }
+
+    [Fact]
+    public void Parse_throws_on_corrupt_sln_file()
+    {
+        // Arrange
+        var slnPath = CreateTempFile("Corrupt.sln", "this is not a valid solution file");
+
+        // Act & Assert
+        var ex = Assert.Throws<InvalidOperationException>(() => SolutionParser.Parse(slnPath));
+        Assert.Contains("could not be parsed", ex.Message);
+        Assert.Contains("Corrupt.sln", ex.Message);
+    }
+
+    [Fact]
     public void Parse_returns_empty_list_for_empty_solution()
     {
         // Arrange

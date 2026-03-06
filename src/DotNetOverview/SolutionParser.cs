@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Xml;
+using Microsoft.VisualStudio.SolutionPersistence.Model;
 using Microsoft.VisualStudio.SolutionPersistence.Serializer;
 
 namespace DotNetOverview;
@@ -20,8 +22,16 @@ public static class SolutionParser
 
         var serializer = SolutionSerializers.GetSerializerByMoniker(solutionFilePath)
             ?? throw new ArgumentException($"Unsupported solution file format ({solutionFilePath})", nameof(solutionFilePath));
-        var solutionModel = serializer.OpenAsync(solutionFilePath, CancellationToken.None)
-            .GetAwaiter().GetResult();
+        SolutionModel solutionModel;
+        try
+        {
+            solutionModel = serializer.OpenAsync(solutionFilePath, CancellationToken.None)
+                .GetAwaiter().GetResult();
+        }
+        catch (Exception ex) when (ex is XmlException or SolutionException)
+        {
+            throw new InvalidOperationException($"Solution file could not be parsed ({solutionFilePath})", ex);
+        }
 
         var projectPaths = solutionModel.SolutionProjects
             .Select(p => Path.GetFullPath(Path.Combine(solutionDirectory, p.FilePath)))
