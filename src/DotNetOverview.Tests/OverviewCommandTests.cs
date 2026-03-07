@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading;
+using Spectre.Console.Cli;
 using Spectre.Console.Testing;
 using Xunit;
 
@@ -61,8 +62,9 @@ public class OverviewCommandTests
     public void Prints_json_if_requested()
     {
         // Arrange
+        using var jsonOutput = new StringWriter();
         var console = CreateTestConsole();
-        var command = new OverviewCommand(console);
+        var command = new OverviewCommand(console, jsonOutput);
         var settings = new OverviewCommand.Settings()
         {
             Path = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory).Parent?.Parent?.Parent?.ToString() ?? "",
@@ -74,7 +76,24 @@ public class OverviewCommandTests
         command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
-        Assert.True(IsJson(console.Output));
+        Assert.True(IsJson(jsonOutput.ToString()));
+    }
+
+    [Fact]
+    public void CommandApp_can_construct_and_run_command()
+    {
+        // Smoke test: verifies CommandApp's default type resolver can instantiate
+        // OverviewCommand with its optional TextWriter parameter, catching any
+        // regression where an unresolvable constructor parameter breaks activation.
+
+        // Arrange
+        var app = new CommandApp<OverviewCommand>();
+
+        // Act
+        var result = app.Run(["--version"]);
+
+        // Assert
+        Assert.Equal(0, result);
     }
 
     private static bool IsJson(string s)
