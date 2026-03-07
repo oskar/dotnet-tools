@@ -11,8 +11,12 @@ using Spectre.Console.Cli;
 
 namespace DotNetOverview;
 
-public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<OverviewCommand.Settings>
+public sealed class OverviewCommand(IAnsiConsole ansiConsole, TextWriter? rawOutput = null) : Command<OverviewCommand.Settings>
 {
+    // JSON is written directly to stdout rather than through IAnsiConsole to avoid
+    // Spectre.Console wrapping long lines to fit the terminal width, which produces invalid JSON.
+    private readonly TextWriter _rawOutput = rawOutput ?? Console.Out;
+
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         WriteIndented = true
@@ -98,7 +102,7 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole) : Command<Overview
         if (settings.Json)
         {
             var json = JsonSerializer.Serialize(projects, JsonOptions);
-            ansiConsole.WriteLine(json);
+            _rawOutput.WriteLine(json);
             return 0;
         }
 

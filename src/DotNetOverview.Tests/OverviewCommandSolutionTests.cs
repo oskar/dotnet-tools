@@ -76,15 +76,16 @@ public class OverviewCommandSolutionTests : IDisposable
         CreateCsprojFile("Dangling");
         CreateSlnxFile("TestSolution", ["InSolution"]);
 
+        using var jsonOutput = new StringWriter();
         var console = CreateTestConsole();
-        var command = new OverviewCommand(console);
+        var command = new OverviewCommand(console, jsonOutput);
         var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true };
 
         // Act
         command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
-        var projects = JsonSerializer.Deserialize<Project[]>(console.Output);
+        var projects = JsonSerializer.Deserialize<Project[]>(jsonOutput.ToString());
         Assert.NotNull(projects);
         Assert.Equal(2, projects.Length);
 
@@ -100,15 +101,16 @@ public class OverviewCommandSolutionTests : IDisposable
     {
         // Arrange
         CreateCsprojFile("MyProject");
+        using var jsonOutput = new StringWriter();
         var console = CreateTestConsole();
-        var command = new OverviewCommand(console);
+        var command = new OverviewCommand(console, jsonOutput);
         var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true };
 
         // Act
         command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
-        var projects = JsonSerializer.Deserialize<Project[]>(console.Output);
+        var projects = JsonSerializer.Deserialize<Project[]>(jsonOutput.ToString());
         Assert.NotNull(projects);
         var project = Assert.Single(projects);
         Assert.False(Path.IsPathRooted(project.Path), $"Expected relative path but got: {project.Path}");
@@ -120,15 +122,16 @@ public class OverviewCommandSolutionTests : IDisposable
     {
         // Arrange
         CreateCsprojFile("MyProject");
+        using var jsonOutput = new StringWriter();
         var console = CreateTestConsole();
-        var command = new OverviewCommand(console);
+        var command = new OverviewCommand(console, jsonOutput);
         var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true, AbsolutePaths = true };
 
         // Act
         command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
-        var projects = JsonSerializer.Deserialize<Project[]>(console.Output);
+        var projects = JsonSerializer.Deserialize<Project[]>(jsonOutput.ToString());
         Assert.NotNull(projects);
         var project = Assert.Single(projects);
         Assert.True(Path.IsPathRooted(project.Path), $"Expected absolute path but got: {project.Path}");
@@ -141,15 +144,16 @@ public class OverviewCommandSolutionTests : IDisposable
         // Arrange
         CreateCsprojFile("ProjectA");
         CreateSlnxFile("TestSolution", ["ProjectA"]);
+        using var jsonOutput = new StringWriter();
         var console = CreateTestConsole();
-        var command = new OverviewCommand(console);
+        var command = new OverviewCommand(console, jsonOutput);
         var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true };
 
         // Act
         command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
-        var projects = JsonSerializer.Deserialize<Project[]>(console.Output);
+        var projects = JsonSerializer.Deserialize<Project[]>(jsonOutput.ToString());
         Assert.NotNull(projects);
         var project = Assert.Single(projects);
         Assert.False(Path.IsPathRooted(project.Path), $"Expected relative path but got: {project.Path}");
@@ -161,15 +165,16 @@ public class OverviewCommandSolutionTests : IDisposable
         // Arrange
         CreateCsprojFile("ProjectA");
         CreateSlnxFile("TestSolution", ["ProjectA"]);
+        using var jsonOutput = new StringWriter();
         var console = CreateTestConsole();
-        var command = new OverviewCommand(console);
+        var command = new OverviewCommand(console, jsonOutput);
         var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true, AbsolutePaths = true };
 
         // Act
         command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
-        var projects = JsonSerializer.Deserialize<Project[]>(console.Output);
+        var projects = JsonSerializer.Deserialize<Project[]>(jsonOutput.ToString());
         Assert.NotNull(projects);
         var project = Assert.Single(projects);
         Assert.True(Path.IsPathRooted(project.Path), $"Expected absolute path but got: {project.Path}");
@@ -182,15 +187,16 @@ public class OverviewCommandSolutionTests : IDisposable
         // Arrange
         CreateCsprojFile("ProjectA");
         CreateSlnxFile("TestSolution", ["ProjectA"]);
+        using var jsonOutput = new StringWriter();
         var console = CreateTestConsole();
-        var command = new OverviewCommand(console);
+        var command = new OverviewCommand(console, jsonOutput);
         var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true, ShowPaths = true };
 
         // Act
         command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
-        var projects = JsonSerializer.Deserialize<Project[]>(console.Output);
+        var projects = JsonSerializer.Deserialize<Project[]>(jsonOutput.ToString());
         Assert.NotNull(projects);
         var project = Assert.Single(projects);
         Assert.False(Path.IsPathRooted(project.Solution), $"Expected relative path but got: {project.Solution}");
@@ -202,15 +208,16 @@ public class OverviewCommandSolutionTests : IDisposable
         // Arrange
         CreateCsprojFile("ProjectA");
         CreateSlnxFile("TestSolution", ["ProjectA"]);
+        using var jsonOutput = new StringWriter();
         var console = CreateTestConsole();
-        var command = new OverviewCommand(console);
+        var command = new OverviewCommand(console, jsonOutput);
         var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true, ShowPaths = true, AbsolutePaths = true };
 
         // Act
         command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
-        var projects = JsonSerializer.Deserialize<Project[]>(console.Output);
+        var projects = JsonSerializer.Deserialize<Project[]>(jsonOutput.ToString());
         Assert.NotNull(projects);
         var project = Assert.Single(projects);
         Assert.True(Path.IsPathRooted(project.Solution), $"Expected absolute path but got: {project.Solution}");
@@ -225,15 +232,16 @@ public class OverviewCommandSolutionTests : IDisposable
         CreateCsprojFile("ProjectB");
         CreateSlnFile("TestSolution", ["ProjectA", "ProjectB"]);
 
+        using var jsonOutput = new StringWriter();
         var console = CreateTestConsole();
-        var command = new OverviewCommand(console);
+        var command = new OverviewCommand(console, jsonOutput);
         var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true };
 
         // Act
         command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
-        var projects = JsonSerializer.Deserialize<Project[]>(console.Output);
+        var projects = JsonSerializer.Deserialize<Project[]>(jsonOutput.ToString());
         Assert.NotNull(projects);
         Assert.Equal(2, projects.Length);
         Assert.All(projects, p => Assert.Equal("TestSolution.sln", p.Solution));
@@ -247,15 +255,16 @@ public class OverviewCommandSolutionTests : IDisposable
         CreateSlnxFile("SolutionA", ["SharedProject"]);
         CreateSlnxFile("SolutionB", ["SharedProject"]);
 
+        using var jsonOutput = new StringWriter();
         var console = CreateTestConsole();
-        var command = new OverviewCommand(console);
+        var command = new OverviewCommand(console, jsonOutput);
         var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true };
 
         // Act
         command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
-        var projects = JsonSerializer.Deserialize<Project[]>(console.Output);
+        var projects = JsonSerializer.Deserialize<Project[]>(jsonOutput.ToString());
         Assert.NotNull(projects);
         Assert.Equal(2, projects.Length);
         Assert.All(projects, p => Assert.Equal("SharedProject", p.Name));
