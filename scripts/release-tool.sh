@@ -3,19 +3,20 @@
 set -euo pipefail
 
 TOOL="${1:-}"
+VERSION="${2:-}"
+
+usage() {
+  echo "Usage: $0 <dotnet-open|dotnet-overview> <version>"
+  echo "Example: $0 dotnet-open 1.5.0"
+  exit 1
+}
 
 case "$TOOL" in
-  dotnet-open)
-    CSPROJ="src/DotNetOpen/DotNetOpen.csproj"
-    ;;
-  dotnet-overview)
-    CSPROJ="src/DotNetOverview/DotNetOverview.csproj"
-    ;;
-  *)
-    echo "Usage: $0 <dotnet-open|dotnet-overview>"
-    exit 1
-    ;;
+  dotnet-open|dotnet-overview) ;;
+  *) usage ;;
 esac
+
+[[ -z "$VERSION" ]] && usage
 
 if ! command -v gh >/dev/null 2>&1; then
   echo "GitHub CLI (gh) is required."
@@ -40,13 +41,6 @@ if [[ -n "$(git status --porcelain)" ]]; then
 fi
 
 git pull --ff-only
-
-VERSION=$(sed -n 's/.*<Version>\(.*\)<\/Version>.*/\1/p' "$CSPROJ" | head -n1)
-
-if [[ -z "$VERSION" ]]; then
-  echo "Failed to parse version from $CSPROJ"
-  exit 1
-fi
 
 TAG="${TOOL}-v${VERSION}"
 PREV_TAG=$(git tag --list "${TOOL}-v*" --sort=-v:refname | grep -v "^${TAG}$" | head -n1 || true)
@@ -77,9 +71,6 @@ else
     --notes-start-tag "$PREV_TAG"
 fi
 
-echo "Draft release ready for manual edits:"
+echo ""
+echo "NuGet publish triggered. Draft release ready for editing:"
 echo "  https://github.com/${REPO}/releases/tag/${TAG}"
-
-echo "NuGet publish not triggered (expected for review-first flow)."
-echo "When ready to publish all tools from main: gh workflow run publish.yml --repo ${REPO} --ref main"
-echo "If you only want to publish ${TOOL}, run the publish workflow with appropriate inputs or update publish.yml to support per-tool publishing."
