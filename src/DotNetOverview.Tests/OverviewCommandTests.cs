@@ -13,7 +13,7 @@ public class OverviewCommandTests
     public void Prints_version_and_exits_when_Version_set()
     {
         // Arrange
-        var semVerPattern = @"^\d+\.\d+\.\d+$";
+        var semVerPattern = @"^\d+\.\d+\.\d+(-[\w.]+)?$";
 
         var console = CreateTestConsole();
         var command = new OverviewCommand(console);

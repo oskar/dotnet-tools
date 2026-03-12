@@ -1,0 +1,25 @@
+name: "Publish tool to NuGet"
+on:
+  workflow_call:
+    inputs:
+      csproj:
+        required: true
+        type: string
+permissions:
+  contents: read
+jobs:
+  publish:
+    name: publish
+    environment: nuget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5.0.0
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-dotnet@v5.0.0
+        with:
+          dotnet-version: "8.0.x"
+      - run: dotnet pack ${{ inputs.csproj }} -c Release -o .
+      - run: dotnet nuget push *.nupkg --source https://api.nuget.org/v3/index.json --api-key ${NUGET_API_KEY}
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}

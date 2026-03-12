@@ -1,0 +1,12 @@
+name: "Publish dotnet-open to NuGet"
+on:
+  push:
+    tags: ["dotnet-open-v*"]
+permissions:
+  contents: read
+jobs:
+  publish:
+    uses: ./.github/workflows/_publish-tool.yml
+    with:
+      csproj: src/DotNetOpen/DotNetOpen.csproj
+    secrets: inherit
