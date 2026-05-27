@@ -45,7 +45,7 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole, TextWriter? rawOut
         public bool Json { get; set; }
     }
 
-    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         if (settings.Version)
         {
