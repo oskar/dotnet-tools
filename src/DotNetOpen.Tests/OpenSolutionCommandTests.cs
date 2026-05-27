@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Threading;
+using Spectre.Console.Cli;
 using Spectre.Console.Testing;
 using Xunit;
 
@@ -37,7 +38,7 @@ public class OpenSolutionCommandTests : IDisposable
         };
 
         // Act
-        var result = command.Execute(null!, settings, CancellationToken.None);
+        var result = Execute(command, settings);
 
         // Assert
         Assert.Equal(0, result);
@@ -59,7 +60,7 @@ public class OpenSolutionCommandTests : IDisposable
         };
 
         // Act
-        var result = command.Execute(null!, settings, CancellationToken.None);
+        var result = Execute(command, settings);
 
         // Assert
         Assert.Equal(0, result);
@@ -81,7 +82,7 @@ public class OpenSolutionCommandTests : IDisposable
         };
 
         // Act
-        var result = command.Execute(null!, settings, CancellationToken.None);
+        var result = Execute(command, settings);
 
         // Assert
         Assert.Equal(0, result);
@@ -104,7 +105,7 @@ public class OpenSolutionCommandTests : IDisposable
         };
 
         // Act
-        var result = command.Execute(null!, settings, CancellationToken.None);
+        var result = Execute(command, settings);
 
         // Assert
         Assert.Equal(0, result);
@@ -131,7 +132,7 @@ public class OpenSolutionCommandTests : IDisposable
         };
 
         // Act
-        var result = command.Execute(null!, settings, CancellationToken.None);
+        var result = Execute(command, settings);
 
         // Assert
         Assert.Equal(0, result);
@@ -157,7 +158,7 @@ public class OpenSolutionCommandTests : IDisposable
         };
 
         // Act
-        var result = command.Execute(null!, settings, CancellationToken.None);
+        var result = Execute(command, settings);
 
         // Assert
         Assert.Equal(1, result);
@@ -176,7 +177,7 @@ public class OpenSolutionCommandTests : IDisposable
         };
 
         // Act
-        var result = command.Execute(null!, settings, CancellationToken.None);
+        var result = Execute(command, settings);
 
         // Assert
         Assert.Equal(0, result);
@@ -192,4 +193,7 @@ public class OpenSolutionCommandTests : IDisposable
 
         return console;
     }
+
+    private static int Execute(OpenSolutionCommand command, OpenSolutionCommand.Settings settings) =>
+        ((ICommand<OpenSolutionCommand.Settings>)command).ExecuteAsync(null!, settings, CancellationToken.None).GetAwaiter().GetResult();
 }
