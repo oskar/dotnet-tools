@@ -12,7 +12,20 @@ jobs:
         with:
           dotnet-version: "8.0.x"
       - run: dotnet build
-      - run: dotnet test
+      - run: dotnet test --collect:"Code Coverage" --results-directory ./TestResults
+      - name: Install dotnet-coverage
+        run: dotnet tool install --global dotnet-coverage
+      - name: Convert coverage to Cobertura XML
+        run: dotnet-coverage merge --output TestResults/coverage.cobertura.xml --output-format cobertura "TestResults/**/*.coverage"
+      - name: ReportGenerator
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.5.10
+        with:
+          reports: "TestResults/coverage.cobertura.xml"
+          targetdir: "coveragereport"
+          reporttypes: "MarkdownSummaryGithub"
+          assemblyfilters: "+dotnet-open;+dotnet-overview"
+      - name: Write coverage to job summary
+        run: cat coveragereport/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
   lint:
     name: "Code linting"
     runs-on: ubuntu-latest
