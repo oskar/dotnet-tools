@@ -12,7 +12,21 @@ jobs:
         with:
           dotnet-version: "8.0.x"
       - run: dotnet build
-      - run: dotnet test
+      - run: dotnet test --collect:"XPlat Code Coverage" --results-directory ./TestResults
+      - name: Code Coverage Summary
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: "TestResults/**/coverage.cobertura.xml"
+          badge: true
+          fail_below_min: false
+          format: markdown
+          hide_branch_rate: false
+          hide_complexity: true
+          indicators: true
+          output: file
+          thresholds: "60 80"
+      - name: Write coverage to job summary
+        run: cat code-coverage-results.md >> "$GITHUB_STEP_SUMMARY"
   lint:
     name: "Code linting"
     runs-on: ubuntu-latest
