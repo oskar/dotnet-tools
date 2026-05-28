@@ -3,3 +3,4 @@ obj/
 out/
 .idea/
 *.DotSettings.user
+.worktrees/
