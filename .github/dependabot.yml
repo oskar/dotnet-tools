@@ -4,6 +4,10 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      spectre-console:
+        patterns:
+          - "Spectre.Console*"
     ignore:
       - dependency-name: "Microsoft.Extensions.*"
         update-types: ["version-update:semver-major"]
