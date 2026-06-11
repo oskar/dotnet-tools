@@ -57,19 +57,72 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole, TextWriter? rawOut
 
         // Calculate absolute path from supplied path and default
         // to current directory if no path is specified.
-        var searchPath = string.IsNullOrEmpty(settings.Path)
+        var rawPath = string.IsNullOrEmpty(settings.Path)
             ? Directory.GetCurrentDirectory()
-            : Path.GetFullPath(settings.Path);
+            : settings.Path;
 
-        if (!Directory.Exists(searchPath))
+        string[] searchPaths;
+        string commonAncestor;
+
+        if (rawPath.Contains('*'))
         {
-            ansiConsole.MarkupLine($"Path does not exist: [green]{Markup.Escape(searchPath)}[/].");
-            return 1;
+            var absoluteRaw = Path.IsPathRooted(rawPath) ? rawPath : Path.GetFullPath(rawPath);
+            var parent = Path.GetDirectoryName(absoluteRaw);
+            var pattern = Path.GetFileName(absoluteRaw);
+
+            if (pattern is null || parent is null || parent.Contains('*'))
+            {
+                ansiConsole.MarkupLine("Wildcard is only supported in the last path segment.");
+                return 1;
+            }
+
+            if (!Directory.Exists(parent))
+            {
+                ansiConsole.MarkupLine($"Path does not exist: [green]{Markup.Escape(parent)}[/].");
+                return 1;
+            }
+
+            var matched = Directory.EnumerateDirectories(parent, pattern).OrderBy(d => d).ToArray();
+
+            if (matched.Length == 0)
+            {
+                ansiConsole.MarkupLine($"No directories matched pattern: [green]{Markup.Escape(absoluteRaw)}[/].");
+                return 1;
+            }
+
+            searchPaths = matched;
+            commonAncestor = parent;
+        }
+        else
+        {
+            var searchPath = Path.GetFullPath(rawPath);
+
+            if (!Directory.Exists(searchPath))
+            {
+                ansiConsole.MarkupLine($"Path does not exist: [green]{Markup.Escape(searchPath)}[/].");
+                return 1;
+            }
+
+            searchPaths = [searchPath];
+            commonAncestor = searchPath;
         }
 
         (IReadOnlyList<string> allCsprojFiles, IReadOnlyList<string> solutionFiles) = ansiConsole.WithSpinner(
             "Scanning csproj and solution files...",
-            () => FileScanner.Scan(searchPath));
+            () =>
+            {
+                var csprojFiles = new List<string>();
+                var slnFiles = new List<string>();
+                foreach (var sp in searchPaths)
+                {
+                    var result = FileScanner.Scan(sp);
+                    csprojFiles.AddRange(result.CsprojFiles);
+                    slnFiles.AddRange(result.SolutionFiles);
+                }
+                csprojFiles.Sort();
+                slnFiles.Sort();
+                return (csprojFiles as IReadOnlyList<string>, slnFiles as IReadOnlyList<string>);
+            });
 
         if (allCsprojFiles.Count == 0)
         {
@@ -85,8 +138,8 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole, TextWriter? rawOut
         {
             if (!settings.AbsolutePaths)
             {
-                // Adjust path to be relative to search path
-                project.Path = Path.GetRelativePath(searchPath, project.Path);
+                // Adjust path to be relative to common ancestor
+                project.Path = Path.GetRelativePath(commonAncestor, project.Path);
             }
 
             if (project.Solution is not null)
@@ -94,7 +147,7 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole, TextWriter? rawOut
                 if (!settings.ShowPaths)
                     project.Solution = Path.GetFileName(project.Solution);
                 else if (!settings.AbsolutePaths)
-                    project.Solution = Path.GetRelativePath(searchPath, project.Solution);
+                    project.Solution = Path.GetRelativePath(commonAncestor, project.Solution);
                 // else: ShowPaths + AbsolutePaths → keep the stored absolute path as-is
             }
         }
