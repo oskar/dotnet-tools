@@ -78,19 +78,40 @@ public class OverviewCommandWildcardTests : IDisposable
     }
 
     [Fact]
-    public void Wildcard_in_non_terminal_segment_returns_error()
+    public void Wildcard_in_middle_of_path_matches_directories()
     {
-        // Arrange
+        // Arrange — structure: _tempDirectory/group-a/src/App.csproj
+        //                      _tempDirectory/group-b/src/Lib.csproj
+        // Pattern: _tempDirectory/group-*/src
+        var srcA = Path.Combine(_tempDirectory, "group-a", "src");
+        var srcB = Path.Combine(_tempDirectory, "group-b", "src");
+        Directory.CreateDirectory(srcA);
+        Directory.CreateDirectory(srcB);
+        File.WriteAllText(Path.Combine(srcA, "App.csproj"), """
+            <Project Sdk="Microsoft.NET.Sdk">
+              <PropertyGroup>
+                <TargetFramework>net8.0</TargetFramework>
+              </PropertyGroup>
+            </Project>
+            """);
+        File.WriteAllText(Path.Combine(srcB, "Lib.csproj"), """
+            <Project Sdk="Microsoft.NET.Sdk">
+              <PropertyGroup>
+                <TargetFramework>net8.0</TargetFramework>
+              </PropertyGroup>
+            </Project>
+            """);
+
         var console = CreateTestConsole();
         var command = new OverviewCommand(console);
-        var settings = new OverviewCommand.Settings { Path = Path.Combine(_tempDirectory, "*", "projects") };
+        var settings = new OverviewCommand.Settings { Path = Path.Combine(_tempDirectory, "group-*", "src") };
 
         // Act
         var exitCode = Execute(command, settings);
 
         // Assert
-        Assert.Equal(1, exitCode);
-        Assert.Contains("Wildcard is only supported in the last path segment", console.Output.Trim());
+        Assert.Equal(0, exitCode);
+        Assert.Contains("2 project(s)", console.Output);
     }
 
     [Fact]

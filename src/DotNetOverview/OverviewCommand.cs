@@ -6,6 +6,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading;
+using Microsoft.Extensions.FileSystemGlobbing;
+using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -67,22 +69,43 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole, TextWriter? rawOut
         if (rawPath.Contains('*'))
         {
             var absoluteRaw = Path.IsPathRooted(rawPath) ? rawPath : Path.GetFullPath(rawPath);
-            var parent = Path.GetDirectoryName(absoluteRaw);
-            var pattern = Path.GetFileName(absoluteRaw);
 
-            if (pattern is null || parent is null || parent.Contains('*'))
+            // Split into a non-wildcard root and the glob pattern.
+            // Walk segments from the start until we hit one containing '*'.
+            var segments = absoluteRaw.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            int firstWildcard = Array.FindIndex(segments, s => s.Contains('*'));
+            var root = string.Join(Path.DirectorySeparatorChar, segments[..firstWildcard]);
+            var globPattern = string.Join('/', segments[firstWildcard..]);
+
+            if (!Directory.Exists(root))
             {
-                ansiConsole.MarkupLine("Wildcard is only supported in the last path segment.");
+                ansiConsole.MarkupLine($"Path does not exist: [green]{Markup.Escape(root)}[/].");
                 return 1;
             }
 
-            if (!Directory.Exists(parent))
-            {
-                ansiConsole.MarkupLine($"Path does not exist: [green]{Markup.Escape(parent)}[/].");
-                return 1;
-            }
+            // Use FileSystemGlobbing to find all directories matching the pattern.
+            // Append "/**/*" so the matcher can traverse into them; we then derive
+            // the matching directory at the glob depth from each result.
+            var matcher = new Matcher(StringComparison.OrdinalIgnoreCase);
+            matcher.AddInclude(globPattern + "/**/*");
+            matcher.AddInclude(globPattern); // also match if the dir itself is a leaf
 
-            var matched = Directory.EnumerateDirectories(parent, pattern).OrderBy(d => d).ToArray();
+            var matchResult = matcher.Execute(new DirectoryInfoWrapper(new DirectoryInfo(root)));
+
+            // Extract unique directories at the depth of the glob pattern (strip the trailing file segment).
+            int patternDepth = globPattern.Count(c => c == '/');
+            var matched = matchResult.Files
+                .Select(f =>
+                {
+                    var parts = f.Path.Split('/');
+                    // Take the first (patternDepth + 1) segments as the matched directory
+                    var dirRelative = string.Join(Path.DirectorySeparatorChar, parts[..(patternDepth + 1)]);
+                    return Path.GetFullPath(Path.Combine(root, dirRelative));
+                })
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Where(Directory.Exists)
+                .OrderBy(d => d)
+                .ToArray();
 
             if (matched.Length == 0)
             {
@@ -91,7 +114,7 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole, TextWriter? rawOut
             }
 
             searchPaths = matched;
-            commonAncestor = parent;
+            commonAncestor = root;
         }
         else
         {
