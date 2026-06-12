@@ -249,6 +249,23 @@ public class OverviewCommandSolutionTests : IDisposable
     }
 
     [Fact]
+    public void Does_not_crash_when_project_name_contains_square_brackets()
+    {
+        // Arrange - project name with square brackets that would otherwise be parsed as Spectre markup
+        const string projectName = "[deprecated]project";
+        CreateCsprojFile(projectName);
+
+        var console = CreateTestConsole();
+        var command = new OverviewCommand(console);
+        var settings = new OverviewCommand.Settings { Path = _tempDirectory };
+
+        // Act & Assert - should not throw
+        var exitCode = Execute(command, settings);
+        Assert.Equal(0, exitCode);
+        Assert.Contains(projectName, console.Output);
+    }
+
+    [Fact]
     public void Project_in_multiple_solutions_appears_multiple_times()
     {
         // Arrange - one project referenced by two solutions

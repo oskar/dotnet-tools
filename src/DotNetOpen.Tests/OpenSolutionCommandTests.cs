@@ -27,6 +27,27 @@ public class OpenSolutionCommandTests : IDisposable
     }
 
     [Fact]
+    public void Does_not_crash_when_solution_name_contains_square_brackets()
+    {
+        // Arrange - solution name with square brackets that would otherwise be parsed as Spectre markup
+        const string fileName = "[deprecated]solution.sln";
+        File.WriteAllText(Path.Combine(_tempDirectory, fileName), "");
+        File.WriteAllText(Path.Combine(_tempDirectory, "Other.sln"), "");
+        var console = CreateTestConsole();
+        var command = new OpenSolutionCommand(console);
+        var settings = new OpenSolutionCommand.Settings
+        {
+            Path = _tempDirectory,
+            First = true
+        };
+
+        // Act & Assert - should not throw
+        var result = Execute(command, settings);
+        Assert.Equal(0, result);
+        Assert.Contains(fileName, console.Output);
+    }
+
+    [Fact]
     public void Execute_returns_0_when_no_solution_found()
     {
         // Arrange

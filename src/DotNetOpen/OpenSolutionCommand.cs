@@ -44,7 +44,7 @@ public sealed class OpenSolutionCommand(IAnsiConsole ansiConsole) : Command<Open
 
         if (!Directory.Exists(searchPath))
         {
-            ansiConsole.MarkupLine($"Path does not exist: [green]{searchPath}[/].");
+            ansiConsole.MarkupLine($"Path does not exist: [green]{Markup.Escape(searchPath)}[/].");
             return 1;
         }
 
@@ -70,7 +70,7 @@ public sealed class OpenSolutionCommand(IAnsiConsole ansiConsole) : Command<Open
             return 0;
         }
 
-        ansiConsole.MarkupLine($"Found [green]{files.Length}[/] solutions in [green]{searchPath}[/].");
+        ansiConsole.MarkupLine($"Found [green]{files.Length}[/] solutions in [green]{Markup.Escape(searchPath)}[/].");
 
         if (settings.First)
         {
@@ -83,7 +83,7 @@ public sealed class OpenSolutionCommand(IAnsiConsole ansiConsole) : Command<Open
             Title = "Select which to open:",
             PageSize = 15,
             SearchEnabled = true,
-            Converter = filePath => Path.GetRelativePath(searchPath, filePath)
+            Converter = filePath => Markup.Escape(Path.GetRelativePath(searchPath, filePath))
         };
         selectionPrompt.AddChoices(files);
         selectionPrompt.AddCancelResult(() => "");
@@ -99,7 +99,7 @@ public sealed class OpenSolutionCommand(IAnsiConsole ansiConsole) : Command<Open
 
     private void OpenFile(string filePath)
     {
-        ansiConsole.MarkupLine($"Opening [green]{filePath}[/].");
+        ansiConsole.MarkupLine($"Opening [green]{Markup.Escape(filePath)}[/].");
         Process.Start(new ProcessStartInfo
         {
             FileName = filePath,

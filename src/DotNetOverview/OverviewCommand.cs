@@ -63,7 +63,7 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole, TextWriter? rawOut
 
         if (!Directory.Exists(searchPath))
         {
-            ansiConsole.MarkupLine($"Path does not exist: [green]{searchPath}[/].");
+            ansiConsole.MarkupLine($"Path does not exist: [green]{Markup.Escape(searchPath)}[/].");
             return 1;
         }
 
