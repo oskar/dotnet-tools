@@ -47,9 +47,9 @@ public static class Utilities
         foreach (var project in projects)
         {
             table.AddRow(
-              showPath ? project.Path : project.Name,
-              project.TargetFramework ?? "",
-              project.Sdk ?? ""
+              Markup.Escape(showPath ? project.Path : project.Name),
+              Markup.Escape(project.TargetFramework ?? ""),
+              Markup.Escape(project.Sdk ?? "")
             );
         }
 
