@@ -12,21 +12,20 @@ jobs:
         with:
           dotnet-version: "8.0.x"
       - run: dotnet build
-      - run: dotnet test --collect:"XPlat Code Coverage" --results-directory ./TestResults
-      - name: Code Coverage Summary
-        uses: irongut/CodeCoverageSummary@v1.3.0
+      - run: dotnet test --collect:"Code Coverage" --results-directory ./TestResults
+      - name: Install dotnet-coverage
+        run: dotnet tool install --global dotnet-coverage
+      - name: Convert coverage to Cobertura XML
+        run: dotnet-coverage merge --output TestResults/coverage.cobertura.xml --output-format cobertura "TestResults/**/*.coverage"
+      - name: ReportGenerator
+        uses: danielpalme/ReportGenerator-GitHub-Action@5.5.10
         with:
-          filename: "TestResults/**/coverage.cobertura.xml"
-          badge: true
-          fail_below_min: false
-          format: markdown
-          hide_branch_rate: false
-          hide_complexity: true
-          indicators: true
-          output: file
-          thresholds: "60 80"
+          reports: "TestResults/coverage.cobertura.xml"
+          targetdir: "coveragereport"
+          reporttypes: "MarkdownSummaryGithub"
+          assemblyfilters: "+dotnet-open;+dotnet-overview"
       - name: Write coverage to job summary
-        run: cat code-coverage-results.md >> "$GITHUB_STEP_SUMMARY"
+        run: cat coveragereport/SummaryGithub.md >> "$GITHUB_STEP_SUMMARY"
   lint:
     name: "Code linting"
     runs-on: ubuntu-latest
