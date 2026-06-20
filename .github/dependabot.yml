@@ -8,7 +8,3 @@ updates:
       spectre-console:
         patterns:
           - "Spectre.Console*"
-    ignore:
-      - dependency-name: "Microsoft.Extensions.*"
-        update-types: ["version-update:semver-major"]
-        versions: [">= 9"]
