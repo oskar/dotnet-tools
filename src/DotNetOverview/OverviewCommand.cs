@@ -6,6 +6,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading;
+using Microsoft.Extensions.FileSystemGlobbing;
+using Microsoft.Extensions.FileSystemGlobbing.Abstractions;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -57,19 +59,93 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole, TextWriter? rawOut
 
         // Calculate absolute path from supplied path and default
         // to current directory if no path is specified.
-        var searchPath = string.IsNullOrEmpty(settings.Path)
+        var rawPath = string.IsNullOrEmpty(settings.Path)
             ? Directory.GetCurrentDirectory()
-            : Path.GetFullPath(settings.Path);
+            : settings.Path;
 
-        if (!Directory.Exists(searchPath))
+        string[] searchPaths;
+        string commonAncestor;
+
+        if (rawPath.Contains('*'))
         {
-            ansiConsole.MarkupLine($"Path does not exist: [green]{Markup.Escape(searchPath)}[/].");
-            return 1;
+            var absoluteRaw = Path.IsPathRooted(rawPath) ? rawPath : Path.GetFullPath(rawPath);
+
+            // Split into a non-wildcard root and the glob pattern.
+            // Walk segments from the start until we hit one containing '*'.
+            var segments = absoluteRaw.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+            int firstWildcard = Array.FindIndex(segments, s => s.Contains('*'));
+            var root = string.Join(Path.DirectorySeparatorChar, segments[..firstWildcard]);
+            var globPattern = string.Join('/', segments[firstWildcard..]);
+
+            if (!Directory.Exists(root))
+            {
+                ansiConsole.MarkupLine($"Path does not exist: [green]{Markup.Escape(root)}[/].");
+                return 1;
+            }
+
+            // Use FileSystemGlobbing to find all directories matching the pattern.
+            // Append "/**/*" so the matcher can traverse into them; we then derive
+            // the matching directory at the glob depth from each result.
+            var matcher = new Matcher(StringComparison.OrdinalIgnoreCase);
+            matcher.AddInclude(globPattern + "/**/*");
+            matcher.AddInclude(globPattern); // also match if the dir itself is a leaf
+
+            var matchResult = matcher.Execute(new DirectoryInfoWrapper(new DirectoryInfo(root)));
+
+            // Extract unique directories at the depth of the glob pattern (strip the trailing file segment).
+            int patternDepth = globPattern.Count(c => c == '/');
+            var matched = matchResult.Files
+                .Select(f =>
+                {
+                    var parts = f.Path.Split('/');
+                    // Take the first (patternDepth + 1) segments as the matched directory
+                    var dirRelative = string.Join(Path.DirectorySeparatorChar, parts[..(patternDepth + 1)]);
+                    return Path.GetFullPath(Path.Combine(root, dirRelative));
+                })
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Where(Directory.Exists)
+                .OrderBy(d => d)
+                .ToArray();
+
+            if (matched.Length == 0)
+            {
+                ansiConsole.MarkupLine($"No directories matched pattern: [green]{Markup.Escape(absoluteRaw)}[/].");
+                return 1;
+            }
+
+            searchPaths = matched;
+            commonAncestor = root;
+        }
+        else
+        {
+            var searchPath = Path.GetFullPath(rawPath);
+
+            if (!Directory.Exists(searchPath))
+            {
+                ansiConsole.MarkupLine($"Path does not exist: [green]{Markup.Escape(searchPath)}[/].");
+                return 1;
+            }
+
+            searchPaths = [searchPath];
+            commonAncestor = searchPath;
         }
 
         (IReadOnlyList<string> allCsprojFiles, IReadOnlyList<string> solutionFiles) = ansiConsole.WithSpinner(
             "Scanning csproj and solution files...",
-            () => FileScanner.Scan(searchPath));
+            () =>
+            {
+                var csprojFiles = new List<string>();
+                var slnFiles = new List<string>();
+                foreach (var sp in searchPaths)
+                {
+                    var result = FileScanner.Scan(sp);
+                    csprojFiles.AddRange(result.CsprojFiles);
+                    slnFiles.AddRange(result.SolutionFiles);
+                }
+                csprojFiles.Sort();
+                slnFiles.Sort();
+                return (csprojFiles as IReadOnlyList<string>, slnFiles as IReadOnlyList<string>);
+            });
 
         if (allCsprojFiles.Count == 0)
         {
@@ -85,8 +161,8 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole, TextWriter? rawOut
         {
             if (!settings.AbsolutePaths)
             {
-                // Adjust path to be relative to search path
-                project.Path = Path.GetRelativePath(searchPath, project.Path);
+                // Adjust path to be relative to common ancestor
+                project.Path = Path.GetRelativePath(commonAncestor, project.Path);
             }
 
             if (project.Solution is not null)
@@ -94,7 +170,7 @@ public sealed class OverviewCommand(IAnsiConsole ansiConsole, TextWriter? rawOut
                 if (!settings.ShowPaths)
                     project.Solution = Path.GetFileName(project.Solution);
                 else if (!settings.AbsolutePaths)
-                    project.Solution = Path.GetRelativePath(searchPath, project.Solution);
+                    project.Solution = Path.GetRelativePath(commonAncestor, project.Solution);
                 // else: ShowPaths + AbsolutePaths → keep the stored absolute path as-is
             }
         }
