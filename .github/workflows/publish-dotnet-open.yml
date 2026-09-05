@@ -4,9 +4,9 @@ on:
     tags: ["dotnet-open-v*"]
 permissions:
   contents: read
+  id-token: write
 jobs:
   publish:
     uses: ./.github/workflows/_publish-tool.yml
     with:
       csproj: src/DotNetOpen/DotNetOpen.csproj
-    secrets: inherit

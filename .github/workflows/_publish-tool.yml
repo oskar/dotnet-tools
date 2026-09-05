@@ -7,6 +7,7 @@ on:
         type: string
 permissions:
   contents: read
+  id-token: write
 jobs:
   publish:
     name: publish
@@ -20,6 +21,8 @@ jobs:
         with:
           dotnet-version: "8.0.x"
       - run: dotnet pack ${{ inputs.csproj }} -c Release -o .
-      - run: dotnet nuget push *.nupkg --source https://api.nuget.org/v3/index.json --api-key ${NUGET_API_KEY}
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+      - id: login
+        uses: NuGet/login@v1
+        with:
+          user: oskarh
+      - run: dotnet nuget push *.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ steps.login.outputs.NUGET_API_KEY }}
