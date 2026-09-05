@@ -4,9 +4,9 @@ on:
     tags: ["dotnet-overview-v*"]
 permissions:
   contents: read
+  id-token: write
 jobs:
   publish:
     uses: ./.github/workflows/_publish-tool.yml
     with:
       csproj: src/DotNetOverview/DotNetOverview.csproj
-    secrets: inherit
