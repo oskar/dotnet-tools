@@ -20,7 +20,7 @@ public class OverviewCommandTests
         var settings = new OverviewCommand.Settings { Version = true };
 
         // Act
-        Execute(command, settings);
+        command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
         Assert.Matches(semVerPattern, console.Output);
@@ -36,7 +36,7 @@ public class OverviewCommandTests
         Assert.False(Directory.Exists(settings.Path), $"Test prerequisite failed: Path '{settings.Path}' should not exist");
 
         // Act
-        Execute(command, settings);
+        command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
         Assert.Matches(@"^Path does not exist: .*apaththatdoesnotexist\.$", console.Output.Trim());
@@ -52,7 +52,7 @@ public class OverviewCommandTests
         Assert.True(Directory.Exists(settings.Path), $"Test prerequisite failed: Path '{settings.Path}' should exist");
 
         // Act
-        Execute(command, settings);
+        command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
         Assert.Equal("No csproj files found in path.", console.Output.Trim());
@@ -73,7 +73,7 @@ public class OverviewCommandTests
         Assert.True(Directory.Exists(settings.Path), $"Test prerequisite failed: Path '{settings.Path}' should exist");
 
         // Act
-        Execute(command, settings);
+        command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
         Assert.True(IsJson(jsonOutput.ToString()));
@@ -118,7 +118,4 @@ public class OverviewCommandTests
 
         return console;
     }
-
-    private static int Execute(OverviewCommand command, OverviewCommand.Settings settings) =>
-        ((ICommand<OverviewCommand.Settings>)command).ExecuteAsync(null!, settings, CancellationToken.None).GetAwaiter().GetResult();
 }
