@@ -26,7 +26,7 @@ public sealed class OpenSolutionCommand(IAnsiConsole ansiConsole) : Command<Open
         public bool First { get; set; }
     }
 
-    protected override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
+    public override int Execute(CommandContext context, Settings settings, CancellationToken cancellationToken)
     {
         if (settings.Version)
         {
