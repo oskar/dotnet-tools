@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
-using Spectre.Console.Cli;
 using Spectre.Console.Testing;
 using Xunit;
 
@@ -41,7 +40,7 @@ public class OverviewCommandSolutionTests : IDisposable
         var settings = new OverviewCommand.Settings { Path = _tempDirectory };
 
         // Act
-        Execute(command, settings);
+        command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
         Assert.Contains("TestSolution", console.Output);
@@ -62,7 +61,7 @@ public class OverviewCommandSolutionTests : IDisposable
         var settings = new OverviewCommand.Settings { Path = _tempDirectory };
 
         // Act
-        Execute(command, settings);
+        command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
         Assert.Contains("not part of any solution", console.Output);
@@ -83,7 +82,7 @@ public class OverviewCommandSolutionTests : IDisposable
         var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true };
 
         // Act
-        Execute(command, settings);
+        command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
         var projects = JsonSerializer.Deserialize<Project[]>(jsonOutput.ToString());
@@ -108,7 +107,7 @@ public class OverviewCommandSolutionTests : IDisposable
         var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true };
 
         // Act
-        Execute(command, settings);
+        command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
         var projects = JsonSerializer.Deserialize<Project[]>(jsonOutput.ToString());
@@ -129,7 +128,7 @@ public class OverviewCommandSolutionTests : IDisposable
         var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true, AbsolutePaths = true };
 
         // Act
-        Execute(command, settings);
+        command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
         var projects = JsonSerializer.Deserialize<Project[]>(jsonOutput.ToString());
@@ -151,7 +150,7 @@ public class OverviewCommandSolutionTests : IDisposable
         var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true };
 
         // Act
-        Execute(command, settings);
+        command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
         var projects = JsonSerializer.Deserialize<Project[]>(jsonOutput.ToString());
@@ -172,7 +171,7 @@ public class OverviewCommandSolutionTests : IDisposable
         var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true, AbsolutePaths = true };
 
         // Act
-        Execute(command, settings);
+        command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
         var projects = JsonSerializer.Deserialize<Project[]>(jsonOutput.ToString());
@@ -194,7 +193,7 @@ public class OverviewCommandSolutionTests : IDisposable
         var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true, ShowPaths = true };
 
         // Act
-        Execute(command, settings);
+        command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
         var projects = JsonSerializer.Deserialize<Project[]>(jsonOutput.ToString());
@@ -215,7 +214,7 @@ public class OverviewCommandSolutionTests : IDisposable
         var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true, ShowPaths = true, AbsolutePaths = true };
 
         // Act
-        Execute(command, settings);
+        command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
         var projects = JsonSerializer.Deserialize<Project[]>(jsonOutput.ToString());
@@ -239,7 +238,7 @@ public class OverviewCommandSolutionTests : IDisposable
         var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true };
 
         // Act
-        Execute(command, settings);
+        command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
         var projects = JsonSerializer.Deserialize<Project[]>(jsonOutput.ToString());
@@ -260,7 +259,7 @@ public class OverviewCommandSolutionTests : IDisposable
         var settings = new OverviewCommand.Settings { Path = _tempDirectory };
 
         // Act & Assert - should not throw
-        var exitCode = Execute(command, settings);
+        var exitCode = command.Execute(null!, settings, CancellationToken.None);
         Assert.Equal(0, exitCode);
         Assert.Contains(projectName, console.Output);
     }
@@ -279,7 +278,7 @@ public class OverviewCommandSolutionTests : IDisposable
         var settings = new OverviewCommand.Settings { Path = _tempDirectory, Json = true };
 
         // Act
-        Execute(command, settings);
+        command.Execute(null!, settings, CancellationToken.None);
 
         // Assert
         var projects = JsonSerializer.Deserialize<Project[]>(jsonOutput.ToString());
@@ -338,7 +337,4 @@ public class OverviewCommandSolutionTests : IDisposable
         console.Profile.Width = 1024;
         return console;
     }
-
-    private static int Execute(OverviewCommand command, OverviewCommand.Settings settings) =>
-        ((ICommand<OverviewCommand.Settings>)command).ExecuteAsync(null!, settings, CancellationToken.None).GetAwaiter().GetResult();
 }
