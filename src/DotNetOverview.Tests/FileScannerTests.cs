@@ -109,7 +109,7 @@ public class FileScannerTests : IDisposable
     public void Scan_skips_bin_directory()
     {
         CreateFile("Project.csproj");
-        CreateFile("bin/Debug/net8.0/Hidden.csproj");
+        CreateFile("bin/Debug/net10.0/Hidden.csproj");
 
         var result = FileScanner.Scan(_tempDirectory);
 
@@ -121,7 +121,7 @@ public class FileScannerTests : IDisposable
     public void Scan_skips_obj_directory()
     {
         CreateFile("Project.csproj");
-        CreateFile("obj/Debug/net8.0/Hidden.csproj");
+        CreateFile("obj/Debug/net10.0/Hidden.csproj");
 
         var result = FileScanner.Scan(_tempDirectory);
 

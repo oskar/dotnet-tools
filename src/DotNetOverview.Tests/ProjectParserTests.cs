@@ -51,7 +51,7 @@ public class ProjectParserTests : IDisposable
         var projectContent = """
       <Project Sdk="Microsoft.NET.Sdk">
         <PropertyGroup>
-          <TargetFramework>net8.0</TargetFramework>
+          <TargetFramework>net10.0</TargetFramework>
           <OutputType>Exe</OutputType>
           <Authors>John Doe</Authors>
           <Version>1.2.3</Version>
@@ -67,7 +67,7 @@ public class ProjectParserTests : IDisposable
         Assert.Equal("TestProject", result.Name);
         Assert.Equal(projectPath, result.Path);
         Assert.Equal("Microsoft.NET.Sdk", result.Sdk);
-        Assert.Equal("net8.0", result.TargetFramework);
+        Assert.Equal("net10.0", result.TargetFramework);
         Assert.Equal("Exe", result.OutputType);
         Assert.Equal("John Doe", result.Authors);
         Assert.Equal("1.2.3", result.Version);
@@ -80,7 +80,7 @@ public class ProjectParserTests : IDisposable
         var projectContent = """
       <Project Sdk="Microsoft.NET.Sdk.Web">
         <PropertyGroup>
-          <TargetFramework>net8.0</TargetFramework>
+          <TargetFramework>net10.0</TargetFramework>
         </PropertyGroup>
       </Project>
       """;
@@ -92,7 +92,7 @@ public class ProjectParserTests : IDisposable
         // Assert
         Assert.Equal("WebProject", result.Name);
         Assert.Equal("Microsoft.NET.Sdk.Web", result.Sdk);
-        Assert.Equal("net8.0", result.TargetFramework);
+        Assert.Equal("net10.0", result.TargetFramework);
     }
 
     [Fact]
@@ -132,7 +132,7 @@ public class ProjectParserTests : IDisposable
         var projectContent = """
       <Project Sdk="Microsoft.NET.Sdk">
         <PropertyGroup>
-          <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
+          <TargetFrameworks>net10.0;net11.0</TargetFrameworks>
         </PropertyGroup>
       </Project>
       """;
@@ -145,7 +145,7 @@ public class ProjectParserTests : IDisposable
         // Assert
         Assert.Equal("MultiTargetProject", result.Name);
         Assert.Equal("Microsoft.NET.Sdk", result.Sdk);
-        Assert.Equal("net6.0;net8.0", result.TargetFramework);
+        Assert.Equal("net10.0;net11.0", result.TargetFramework);
     }
 
     [Fact]
@@ -155,7 +155,7 @@ public class ProjectParserTests : IDisposable
         var projectContent = """
       <Project Sdk="Microsoft.NET.Sdk">
         <PropertyGroup>
-          <TargetFramework>net8.0</TargetFramework>
+          <TargetFramework>net10.0</TargetFramework>
           <VersionPrefix>2.1.0</VersionPrefix>
           <VersionSuffix>alpha</VersionSuffix>
         </PropertyGroup>
@@ -180,7 +180,7 @@ public class ProjectParserTests : IDisposable
         var projectContent = """
       <Project Sdk="Microsoft.NET.Sdk">
         <PropertyGroup>
-          <TargetFramework>net8.0</TargetFramework>
+          <TargetFramework>net10.0</TargetFramework>
           <VersionPrefix>3.0.0</VersionPrefix>
         </PropertyGroup>
       </Project>
@@ -204,7 +204,7 @@ public class ProjectParserTests : IDisposable
         var projectContent = """
       <Project Sdk="Microsoft.NET.Sdk">
         <PropertyGroup>
-          <TargetFramework>net8.0</TargetFramework>
+          <TargetFramework>net10.0</TargetFramework>
         </PropertyGroup>
       </Project>
       """;
@@ -217,7 +217,7 @@ public class ProjectParserTests : IDisposable
         // Assert
         Assert.Equal("MinimalProject", result.Name);
         Assert.Equal("Microsoft.NET.Sdk", result.Sdk);
-        Assert.Equal("net8.0", result.TargetFramework);
+        Assert.Equal("net10.0", result.TargetFramework);
         Assert.Null(result.OutputType);
         Assert.Null(result.Authors);
         Assert.Null(result.Version);
@@ -230,7 +230,7 @@ public class ProjectParserTests : IDisposable
         var projectContent = """
       <Project Sdk="Microsoft.NET.Sdk">
         <PropertyGroup>
-          <TargetFramework>net8.0</TargetFramework>
+          <TargetFramework>net10.0</TargetFramework>
           <OutputType>Exe</OutputType>
         </PropertyGroup>
         <PropertyGroup>
@@ -248,7 +248,7 @@ public class ProjectParserTests : IDisposable
         // Assert
         Assert.Equal("MultiGroupProject", result.Name);
         Assert.Equal("Microsoft.NET.Sdk", result.Sdk);
-        Assert.Equal("net8.0", result.TargetFramework);
+        Assert.Equal("net10.0", result.TargetFramework);
         Assert.Equal("Exe", result.OutputType);
         Assert.Equal("Multi Group Author", result.Authors);
         Assert.Equal("4.5.6", result.Version);
@@ -261,7 +261,7 @@ public class ProjectParserTests : IDisposable
         var projectContent = """
       <Project Sdk="Microsoft.NET.Sdk">
         <PropertyGroup>
-          <TargetFramework>net8.0</TargetFramework>
+          <TargetFramework>net10.0</TargetFramework>
           <OutputType></OutputType>
           <Authors></Authors>
           <Version></Version>
@@ -277,7 +277,7 @@ public class ProjectParserTests : IDisposable
         // Assert
         Assert.Equal("EmptyPropsProject", result.Name);
         Assert.Equal("Microsoft.NET.Sdk", result.Sdk);
-        Assert.Equal("net8.0", result.TargetFramework);
+        Assert.Equal("net10.0", result.TargetFramework);
         Assert.Equal("", result.OutputType);
         Assert.Equal("", result.Authors);
         Assert.Null(result.Version);
