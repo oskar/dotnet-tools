@@ -22,10 +22,10 @@ public static class FileScanner
 
         var enumerable = new FileSystemEnumerable<string>(
             searchPath,
-            static (ref FileSystemEntry entry) => entry.ToFullPath(),
+            static (ref entry) => entry.ToFullPath(),
             EnumerationOptions)
         {
-            ShouldIncludePredicate = static (ref FileSystemEntry entry) =>
+            ShouldIncludePredicate = static (ref entry) =>
             {
                 if (entry.IsDirectory) return false;
                 var name = entry.FileName;
@@ -33,7 +33,7 @@ public static class FileScanner
                     || name.EndsWith(".sln", StringComparison.OrdinalIgnoreCase)
                     || name.EndsWith(".slnx", StringComparison.OrdinalIgnoreCase);
             },
-            ShouldRecursePredicate = static (ref FileSystemEntry entry) =>
+            ShouldRecursePredicate = static (ref entry) =>
             {
                 var name = entry.FileName;
                 return !name.Equals(".git", StringComparison.OrdinalIgnoreCase)
