@@ -12,7 +12,10 @@ jobs:
         with:
           dotnet-version: "10.0.x"
       - run: dotnet build
-      - run: dotnet test --coverage --coverage-output-format cobertura --results-directory ./TestResults
+      - run: dotnet test --coverage --coverage-output-format cobertura --report-xunit-markdown --results-directory ./TestResults
+      - name: Write test results to job summary
+        if: always()
+        run: cat TestResults/*.md >> "$GITHUB_STEP_SUMMARY"
       - name: Code Coverage Summary
         uses: irongut/CodeCoverageSummary@v1.3.0
         with:
