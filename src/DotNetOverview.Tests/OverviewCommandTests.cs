@@ -90,7 +90,7 @@ public class OverviewCommandTests
         var app = new CommandApp<OverviewCommand>();
 
         // Act
-        var result = app.Run(["--version"]);
+        var result = app.Run(["--version"], TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Equal(0, result);
