@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="src/DotNetOpen.Tests/DotNetOpen.Tests.csproj" />
+  <Project Path="src/DotNetOpen/DotNetOpen.csproj" />
+  <Project Path="src/DotNetOverview.Tests/DotNetOverview.Tests.csproj" />
+  <Project Path="src/DotNetOverview/DotNetOverview.csproj" />
+</Solution>
