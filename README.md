@@ -18,10 +18,10 @@ are grouped by solution. Supports JSON output for advanced filtering.
 ┌──────────────────────┬──────────────────┬───────────────────┐
 │ Project              │ Target framework │ SDK               │
 ├──────────────────────┼──────────────────┼───────────────────┤
-│ DotNetOpen.Tests     │ net8.0           │ Microsoft.NET.Sdk │
-│ DotNetOpen           │ net8.0           │ Microsoft.NET.Sdk │
-│ DotNetOverview.Tests │ net8.0           │ Microsoft.NET.Sdk │
-│ DotNetOverview       │ net8.0           │ Microsoft.NET.Sdk │
+│ DotNetOpen.Tests     │ net10.0          │ Microsoft.NET.Sdk │
+│ DotNetOpen           │ net10.0          │ Microsoft.NET.Sdk │
+│ DotNetOverview.Tests │ net10.0          │ Microsoft.NET.Sdk │
+│ DotNetOverview       │ net10.0          │ Microsoft.NET.Sdk │
 └──────────────────────┴──────────────────┴───────────────────┘
 Found 4 project(s).
 ```
