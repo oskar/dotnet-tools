@@ -7,7 +7,7 @@ jobs:
     name: "Build and test"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: actions/setup-dotnet@v5.0.0
         with:
           dotnet-version: "10.0.x"
@@ -31,7 +31,7 @@ jobs:
     name: "Code linting"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5.0.0
+      - uses: actions/checkout@v7.0.1
       - uses: actions/setup-dotnet@v5.0.0
         with:
           dotnet-version: "10.0.x"
