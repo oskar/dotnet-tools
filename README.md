@@ -14,7 +14,7 @@ are grouped by solution. Supports JSON output for advanced filtering.
 ```bash
 ❯ dotnet tool install -g dotnet-overview
 ❯ dotnet overview
-                        DotNetTools.sln
+                        DotNetTools.slnx
 ┌──────────────────────┬──────────────────┬───────────────────┐
 │ Project              │ Target framework │ SDK               │
 ├──────────────────────┼──────────────────┼───────────────────┤
@@ -36,5 +36,5 @@ path. Presents an interactive menu when multiple solutions are found.
 ```bash
 ❯ dotnet tool install -g dotnet-open
 ❯ dotnet open
-Opening /Users/oskar/git/dotnet-tools/DotNetTools.sln.
+Opening /Users/oskar/git/dotnet-tools/DotNetTools.slnx.
 ```
