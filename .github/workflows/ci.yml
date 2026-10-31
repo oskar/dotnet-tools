@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: actions/setup-dotnet@v5.0.0
+      - uses: actions/setup-dotnet@v6.0.0
         with:
           dotnet-version: "10.0.x"
       - run: dotnet build
@@ -32,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7.0.1
-      - uses: actions/setup-dotnet@v5.0.0
+      - uses: actions/setup-dotnet@v6.0.0
         with:
           dotnet-version: "10.0.x"
       - run: dotnet format --verify-no-changes --severity info
